@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="mn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billion auto parts Mongolia - Loyalty cart</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f0ede6;
+            min-height: 100vh
+        }
+
+        .topbar {
+            background: #0c1031;
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid #00aeef;
+            position: sticky;
+            top: 0;
+            z-index: 10
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #00aeef
+        }
+
+        .nav {
+            display: flex;
+            gap: 4px
+        }
+
+        .nav button {
+            background: transparent;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 6px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            font-family: inherit
+        }
+
+        .nav button.active {
+            background: #00aeef;
+            color: white;
+            border-color: #00aeef;
+            font-weight: 700
+        }
+
+        .nav button:hover:not(.active) {
+            border-color: #00aeef;
+            color: #00aeef
+        }
+
+        .content {
+            padding: 20px;
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        .scan-wrap {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap
+        }
+
+        .scan-box {
+            flex: 1;
+            min-width: 300px;
+            background: #fff;
+            border: 1px solid #e0ddd6;
+            border-radius: 12px;
+            padding: 20px
+        }
+
+        .scan-title {
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 12px
+        }
+
+        .barcode-input-wrap {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px
+        }
+
+        .barcode-input-wrap input {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            padding: 10px 14px;
+            border: 2px solid #00aeef;
+            border-radius: 6px;
+            background: #fafaf8;
+            color: #1a1a1a;
+            letter-spacing: 2px
+        }
+
+        .barcode-input-wrap input:focus {
+            outline: none;
+            border-color: #00aeef
+        }
+
+        .scan-btn {
+            background: #00aeef;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            letter-spacing: 1px
+        }
+
+        .scan-btn:hover {
+            background: #00aeef
+        }
+
+        .customer-card {
+            background: linear-gradient(135deg, #0c1031 0%, #1a2355 100%);
+            border-radius: 12px;
+            padding: 20px;
+            color: #f5f0e8;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px
+        }
+
+        .customer-card::before {
+            content: 'BILLION AUTO PARTS';
+            position: absolute;
+            right: -10px;
+            top: 8px;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: rgba(232, 197, 71, 0.25);
+            transform: rotate(12deg);
+            font-weight: 700
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px
+        }
+
+        .card-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00aeef;
+            letter-spacing: 1px
+        }
+
+        .card-tier {
+            font-size: 10px;
+            letter-spacing: 2px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700
+        }
+
+        .tier-bronze {
+            background: #cd7f32;
+            color: #fff
+        }
+
+        .tier-silver {
+            background: #a8a9ad;
+            color: #fff
+        }
+
+        .tier-gold {
+            background: #e8c547;
+            color: #1a1a1a
+        }
+
+        .card-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px
+        }
+
+        .cstat {
+            text-align: center
+        }
+
+        .cstat-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e8c547
+        }
+
+        .cstat-lbl {
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: #aaa;
+            margin-top: 2px
+        }
+
+        .discount-badge {
+            background: #00aeef;
+            color: #1a1a1a;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: 1px
+        }
+
+        .sale-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .form-row label {
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 1px;
+            min-width: 80px
+        }
+
+        .form-row input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #fafaf8;
+            color: #1a1a1a;
+            font-family: inherit;
+            font-size: 14px
+        }
+
+        .save-sale-btn {
+            background: #1a1a1a;
+            color: #00aeef;
+            border: 2px solid #1a1a1a;
+            padding: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            letter-spacing: 2px;
+            margin-top: 4px
+        }
+
+        .save-sale-btn:hover {
+            background: #00aeef;
+            color: #1a1a1a
+        }
+
+        .success-toast {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none
+        }
+
+        .right-panel {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px
+        }
+
+        .mini-card {
+            background: #fff;
+            border: 1px solid #e0ddd6;
+            border-radius: 12px;
+            padding: 16px
+        }
+
+        .mini-title {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 10px
+        }
+
+        .hist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0ede6;
+            font-size: 12px
+        }
+
+        .hist-item:last-child {
+            border-bottom: none
+        }
+
+        .hist-date {
+            color: #aaa;
+            font-size: 11px
+        }
+
+        .hist-amt {
+            font-weight: 700;
+            color: #1a1a1a
+        }
+
+        .hist-disc {
+            color: #2d9b4e;
+            font-size: 11px
+        }
+
+        .customers-page {
+            display: none
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+            color: #1a1a1a
+        }
+
+        .add-cust-btn {
+            background: #00aeef;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            letter-spacing: 1px;
+            white-space: nowrap
+        }
+
+        .add-cust-btn:hover {
+            background: #d4b23a
+        }
+
+        .cust-table {
+            background: #fff;
+            border: 1px solid #e0ddd6;
+            border-radius: 12px;
+            overflow: hidden
+        }
+
+        .cust-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px
+        }
+
+        .cust-table th {
+            background: #f5f0e8;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: #888;
+            font-weight: 600;
+            border-bottom: 1px solid #e0ddd6
+        }
+
+        .cust-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0ede6;
+            color: #1a1a1a
+        }
+
+        .cust-table tr:last-child td {
+            border-bottom: none
+        }
+
+        .cust-table tr:hover td {
+            background: #fafaf8;
+            cursor: pointer
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 1px
+        }
+
+        .b-bronze {
+            background: rgba(205, 127, 50, 0.15);
+            color: #8b5a20
+        }
+
+        .b-silver {
+            background: rgba(168, 169, 173, 0.2);
+            color: #555
+        }
+
+        .b-gold {
+            background: rgba(232, 197, 71, 0.2);
+            color: #8b7000
+        }
+
+        .qr-btn {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #888;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit
+        }
+
+        .qr-btn:hover {
+            border-color: #00aeef;
+            color: #00aeef
+        }
+
+        .del-btn {
+            background: transparent;
+            border: 1px solid #ffcccc;
+            color: #cc4444;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            margin-left: 4px
+        }
+
+        .del-btn:hover {
+            background: #ffeeee
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            width: 360px;
+            border: 1px solid #e0ddd6;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15)
+        }
+
+        .modal-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            color: #1a1a1a
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .modal-form label {
+            font-size: 11px;
+            color: #888;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            display: block
+        }
+
+        .modal-form input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            background: #fafaf8;
+            color: #1a1a1a
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px
+        }
+
+        .modal-btns button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #888
+        }
+
+        .btn-cancel:hover {
+            border-color: #999;
+            color: #555
+        }
+
+        .btn-save {
+            background: #00aeef;
+            color: #1a1a1a;
+            border: none
+        }
+
+        .btn-save:hover {
+            background: #00aeef
+        }
+
+        .qr-modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            width: 300px;
+            text-align: center;
+            border: 1px solid #e0ddd6;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15)
+        }
+
+        .qr-card-preview {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-radius: 10px;
+            padding: 16px;
+            margin: 12px 0;
+            color: #f5f0e8
+        }
+
+        .qr-cname {
+            color: #00aeef;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 6px;
+            letter-spacing: 1px
+        }
+
+        .qr-cid {
+            font-size: 11px;
+            color: #aaa;
+            letter-spacing: 2px;
+            margin-bottom: 12px
+        }
+
+        .qr-disc-show {
+            font-size: 13px;
+            color: #00aeef;
+            font-weight: 700;
+            margin-top: 8px
+        }
+
+        #qr-canvas {
+            margin: 0 auto;
+            display: block
+        }
+
+        .print-btn {
+            background: #1a1a1a;
+            color: #00aeef;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-top: 4px
+        }
+
+        .print-btn:hover {
+            background: #333
+        }
+
+        .stats-page {
+            display: none
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #e0ddd6;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center
+        }
+
+        .stat-val {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00aeef;
+            font-family: 'Courier New', monospace
+        }
+
+        .stat-lbl {
+            font-size: 10px;
+            color: #888;
+            letter-spacing: 1px;
+            margin-top: 4px
+        }
+
+        .recent-sales-box {
+            background: #fff;
+            border: 1px solid #e0ddd6;
+            border-radius: 12px;
+            padding: 16px
+        }
+
+        .rs-title {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 12px
+        }
+
+        .rs-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0ede6;
+            font-size: 13px
+        }
+
+        .rs-item:last-child {
+            border-bottom: none
+        }
+
+        .rs-name {
+            font-weight: 600;
+            color: #1a1a1a
+        }
+
+        .rs-meta {
+            color: #aaa;
+            font-size: 11px;
+            margin-top: 2px
+        }
+
+        .rs-amt {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-family: 'Courier New', monospace
+        }
+
+        .rs-saved {
+            color: #2d9b4e;
+            font-size: 11px
+        }
+
+        .empty {
+            text-align: center;
+            color: #aaa;
+            font-size: 13px;
+            padding: 20px;
+            letter-spacing: 1px
+        }
+
+        @media(max-width:600px) {
+            .logo {
+                font-size: 11px
+            }
+
+            .nav button {
+                padding: 5px 8px;
+                font-size: 10px;
+                letter-spacing: 0
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .right-panel {
+                width: 100%
+            }
+        }
+
+        @media print {
+
+            .topbar,
+            .nav,
+            .save-sale-btn,
+            .add-cust-btn,
+            .qr-btn,
+            .del-btn,
+            .print-btn,
+            .btn-cancel {
+                display: none !important
+            }
+
+            .modal-overlay {
+                position: static !important;
+                background: none !important
+            }
+
+            .qr-modal-box {
+                box-shadow: none !important;
+                border: none !important
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <span class="logo">▶ BILLION auto parts Mongolia</span>
+        <div class="nav">
+            <button class="active" onclick="showTab('scan')">QR УНШУУЛАХ</button>
+            <button onclick="showTab('customers')">ҮЙЛЧЛҮҮЛЭГЧИД</button>
+            <button onclick="showTab('stats')">СТАТИСТИК</button>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- SCAN TAB -->
+        <div id="tab-scan">
+            <div class="scan-wrap">
+                <div class="scan-box">
+                    <div class="scan-title">QR / БАРКОД УНШУУЛАХ</div>
+                    <div class="barcode-input-wrap">
+                        <input type="text" id="barcode-in" placeholder="BAPM-000000" maxlength="12"
+                            oninput="this.value=this.value.toUpperCase()"
+                            onkeydown="if(event.key==='Enter')scanCard()" />
+                        <button class="scan-btn" onclick="scanCard()">📷 УНШУУЛАХ</button>
+                    </div>
+                    <div id="customer-display" style="display:none">
+                        <div class="customer-card">
+                            <div class="card-top">
+                                <div>
+                                    <div style="font-size:10px;letter-spacing:2px;color:#aaa;margin-bottom:4px">
+                                        ҮЙЛЧЛҮҮЛЭГЧ</div>
+                                    <div class="card-name" id="cname"></div>
+                                    <div style="font-size:11px;color:#aaa;margin-top:2px" id="cphone"></div>
+                                </div>
+                                <span class="card-tier" id="ctier"></span>
+                            </div>
+                            <div class="card-stats">
+                                <div class="cstat">
+                                    <div class="cstat-val" id="cvisits"></div>
+                                    <div class="cstat-lbl">УДАА</div>
+                                </div>
+                                <div class="cstat">
+                                    <div class="cstat-val" id="ctotal"></div>
+                                    <div class="cstat-lbl">НИЙТ ₮</div>
+                                </div>
+                                <div class="cstat">
+                                    <div class="cstat-val" id="cdiscount"></div>
+                                    <div class="cstat-lbl">ХӨНГӨЛӨЛТ</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="discount-badge" id="disc-badge"></div>
+                        <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:10px">ХУДАЛДАН АВАЛТ
+                            БҮРТГЭХ</div>
+                        <div class="sale-form">
+                            <div class="form-row">
+                                <label>ДҮН ₮</label>
+                                <input type="number" id="sale-amount" placeholder="Дүн оруул..." min="0" />
+                            </div>
+                            <div class="form-row">
+                                <label>СЭЛБЭГ</label>
+                                <input type="text" id="sale-note" placeholder="Сэлбэгийн нэр..." />
+                            </div>
+                            <button class="save-sale-btn" onclick="saveSale()">✓ БҮРТГЭХ</button>
+                            <div class="success-toast" id="toast"></div>
+                        </div>
+                    </div>
+                    <div id="not-found"
+                        style="display:none;color:#aaa;font-size:13px;padding:20px 0;text-align:center;letter-spacing:1px">
+                        ⚠ Үйлчлүүлэгч олдсонгүй.<br><br>
+                        <button class="add-cust-btn" style="font-size:12px;padding:8px 16px"
+                            onclick="showTab('customers');openAddModal()">+ Шинэ бүртгэл нэмэх</button>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="mini-card">
+                        <div class="mini-title">СҮҮЛИЙН ГҮЙЛГЭЭНҮҮД</div>
+                        <div id="recent-hist"></div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-title">УРАМШУУЛАЛ ШАТЛАЛ</div>
+                        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px">
+                            <!-- ШИНЭ — оруул -->
+                            <div style="display:flex;justify-content:space-between"><span style="color:#888">1-р
+                                    удаа</span><span style="color:#cd7f32;font-weight:700">0% хөнгөлт</span></div>
+                            <div style="display:flex;justify-content:space-between"><span style="color:#888">2–4
+                                    удаа</span><span style="color:#cd7f32;font-weight:700">5% хөнгөлт</span></div>
+                            <div style="display:flex;justify-content:space-between"><span style="color:#888">5+
+                                    удаа</span><span style="color:#e8c547;font-weight:700">10% хөнгөлт</span></div>
+                            <div
+                                style="border-top:1px solid #f0ede6;margin-top:4px;padding-top:6px;font-size:10px;color:#aaa">
+                                Нийт 3сая₮+ → +2% · 5сая₮+ → +5% нэмэлт</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOMERS TAB -->
+        <div id="tab-customers" class="customers-page">
+            <div class="search-bar">
+                <input type="text" id="cust-search" placeholder="Нэр, утас эсвэл ID хайх..."
+                    oninput="renderCustomers()" />
+                <button class="add-cust-btn" onclick="openAddModal()">+ ШИНЭ ҮЙЛЧЛҮҮЛЭГЧ</button>
+            </div>
+            <div class="cust-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ҮЙЛЧЛҮҮЛЭГЧ</th>
+                            <th>КАРТ ID</th>
+                            <th>ШАТЛАЛ</th>
+                            <th>ЗОЧИЛСОН</th>
+                            <th>НИЙТ ДҮН</th>
+                            <th>ХӨНГӨЛТ</th>
+                            <th>ҮЙЛДЭЛ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cust-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- STATS TAB -->
+        <div id="tab-stats" class="stats-page">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val" id="s-total-cust">0</div>
+                    <div class="stat-lbl">ҮЙЛЧЛҮҮЛЭГЧ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="s-total-sales">0</div>
+                    <div class="stat-lbl">НИЙТ ГҮЙЛГЭЭ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="s-total-rev">0</div>
+                    <div class="stat-lbl">НИЙТ ОРЛОГО ₮</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val" id="s-total-disc">0</div>
+                    <div class="stat-lbl">НИЙТ ХӨНГӨЛТ ₮</div>
+                </div>
+            </div>
+            <div class="recent-sales-box">
+                <div class="rs-title">БҮРТГЭЛТЭЙ БҮГД ГҮЙЛГЭЭ</div>
+                <div id="all-sales"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ADD CUSTOMER MODAL -->
+    <div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <div class="modal-title">ШИНЭ ҮЙЛЧЛҮҮЛЭГЧ НЭМЭХ</div>
+            <div class="modal-form">
+                <div><label>НЭР</label><input type="text" id="new-name" placeholder="Овог нэр" /></div>
+                <div><label>УТАС</label><input type="text" id="new-phone" placeholder="99xxxxxx" /></div>
+                <div class="modal-btns">
+                    <button class="btn-cancel" onclick="closeModal()">БОЛИХ</button>
+                    <button class="btn-save" onclick="addCustomer()">БҮРТГЭХ + QR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR MODAL -->
+    <div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
+        <div class="qr-modal-box">
+            <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:4px">УРАМШУУЛАЛ КАРТ</div>
+            <div class="qr-card-preview">
+                <div class="qr-cname" id="qr-name"></div>
+                <div class="qr-cid" id="qr-id-show"></div>
+                <div id="qr-canvas"></div>
+                <div class="qr-disc-show" id="qr-disc-show"></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+                <button class="print-btn" onclick="printQR()">🖨 ХЭВЛЭХ</button>
+                <button class="btn-cancel"
+                    style="background:transparent;border:1px solid #ddd;color:#888;padding:8px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px"
+                    onclick="closeQR()">ХААХ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'billion_loyalty_v1';
+
+        const TIERS = [
+            { min: 0, pct: 0, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
+            { min: 2, pct: 5, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
+            { min: 5, pct: 10, tier: 'GOLD', tcls: 'tier-gold', bcls: 'b-gold' },
+        ];
+        function getTier(visits, total) {
+            let t = TIERS[0];
+            for (let i = TIERS.length - 1; i >= 0; i--) {
+                if (visits >= TIERS[i].min) { t = TIERS[i]; break; }
+            }
+            let extra = 0;
+            if (total >= 5000000) extra = 5;
+            else if (total >= 3000000) extra = 2;
+            return { pct: t.pct + extra, tier: t.tier, tcls: t.tcls, bcls: t.bcls };
+        }
+
+
+        function fmt(n) { return Math.round(n).toLocaleString('mn-MN'); }
+        function genId() { return 'BAPM-' + Math.floor(100000 + Math.random() * 900000); }
+
+        function loadData() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { customers: [], sales: [] }; }
+            catch { return { customers: [], sales: [] }; }
+        }
+        function saveData(d) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch (e) { alert('Хадгалах алдаа: ' + e.message); }
+        }
+
+        let db = loadData();
+
+        // Demo data
+        if (db.customers.length === 0) {
+            db.customers = [
+                { id: 'BAPM-001337', name: 'Батбаяр Дорж', phone: '99112233', visits: 3, total: 4200000, saved: 504000 },
+                { id: 'BAPM-002591', name: 'Мөнхзул Ганаа', phone: '88445566', visits: 6, total: 8900000, saved: 1780000 },
+                { id: 'BAPM-003874', name: 'Энхбат Нарантуяа', phone: '99887766', visits: 1, total: 650000, saved: 32500 },
+            ];
+            db.sales = [
+                { custId: 'BAPM-001337', amount: 1500000, disc: 180000, note: 'Тосны шүүлтүүр Toyota', date: '2026-05-28' },
+                { custId: 'BAPM-002591', amount: 2300000, disc: 460000, note: 'Гальмо диск Nissan', date: '2026-06-01' },
+                { custId: 'BAPM-001337', amount: 900000, disc: 108000, note: 'Хувцасны туузан', date: '2026-06-02' },
+                { custId: 'BAPM-003874', amount: 650000, disc: 32500, note: 'Хаалгаар засвар', date: '2026-06-03' },
+            ];
+            saveData(db);
+        }
+
+        let activeCustomer = null;
+
+        function showTab(t) {
+            ['scan', 'customers', 'stats'].forEach(x => {
+                document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none';
+            });
+            document.querySelectorAll('.nav button').forEach((b, i) => {
+                b.classList.toggle('active', ['scan', 'customers', 'stats'][i] === t);
+            });
+            if (t === 'customers') renderCustomers();
+            if (t === 'stats') renderStats();
+        }
+
+        function scanCard() {
+            const val = document.getElementById('barcode-in').value.trim();
+            const c = db.customers.find(x => x.id === val);
+            document.getElementById('customer-display').style.display = c ? 'block' : 'none';
+            document.getElementById('not-found').style.display = c ? 'none' : 'block';
+            document.getElementById('toast').style.display = 'none';
+            if (c) {
+                activeCustomer = c;
+                const tier = getTier(c.visits, c.total);
+                document.getElementById('cname').textContent = c.name;
+                document.getElementById('cphone').textContent = c.phone;
+                document.getElementById('ctier').textContent = tier.tier;
+                document.getElementById('ctier').className = 'card-tier ' + tier.tcls;
+                document.getElementById('cvisits').textContent = c.visits;
+                document.getElementById('ctotal').textContent = fmt(c.total / 1000) + 'K';
+                document.getElementById('cdiscount').textContent = tier.pct + '%';
+                document.getElementById('disc-badge').textContent = '✓ ЭНЭ УДААГИЙН ХӨНГӨЛӨЛТ: ' + tier.pct + '%  —  ' + c.name;
+            }
+        }
+
+        function saveSale() {
+            if (!activeCustomer) return;
+            const amt = parseInt(document.getElementById('sale-amount').value) || 0;
+            if (amt <= 0) { alert('Дүн оруулна уу'); return; }
+            const note = document.getElementById('sale-note').value || '—';
+            const tier = getTier(activeCustomer.visits, activeCustomer.total);
+            const disc = Math.round(amt * tier.pct / 100);
+            activeCustomer.visits += 1;
+            activeCustomer.total += amt;
+            activeCustomer.saved = (activeCustomer.saved || 0) + disc;
+            const today = new Date().toISOString().slice(0, 10);
+            db.sales.push({ custId: activeCustomer.id, amount: amt, disc, note, date: today });
+            saveData(db);
+            document.getElementById('sale-amount').value = '';
+            document.getElementById('sale-note').value = '';
+            const t = document.getElementById('toast');
+            t.textContent = '✓ ' + fmt(amt) + '₮ бүртгэгдлээ. Хөнгөлт: ' + fmt(disc) + '₮';
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 3500);
+            scanCard();
+            renderRecentHist();
+        }
+
+        function renderRecentHist() {
+            const sales = db.sales.slice(-6).reverse();
+            const el = document.getElementById('recent-hist');
+            if (!sales.length) { el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>'; return; }
+            el.innerHTML = sales.map(s => {
+                const c = db.customers.find(x => x.id === s.custId);
+                return `<div class="hist-item">
+      <div>
+        <div style="font-weight:600;color:#1a1a1a;font-size:12px">${c ? c.name : s.custId}</div>
+        <div class="hist-date">${s.date} · ${s.note}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="hist-amt">${fmt(s.amount)}₮</div>
+        <div class="hist-disc">-${fmt(s.disc)}₮</div>
+      </div>
+    </div>`;
+            }).join('');
+        }
+
+        function renderCustomers() {
+            const q = (document.getElementById('cust-search')?.value || '').toLowerCase();
+            const list = db.customers.filter(c =>
+                !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.id.toLowerCase().includes(q)
+            );
+            const tb = document.getElementById('cust-tbody');
+            if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Үйлчлүүлэгч олдсонгүй</td></tr>'; return; }
+            tb.innerHTML = list.map(c => {
+                const tier = getTier(c.visits, c.total);
+                return `<tr onclick="quickScan('${c.id}')">
+      <td><div style="font-weight:600">${c.name}</div><div style="font-size:11px;color:#aaa">${c.phone}</div></td>
+      <td style="font-family:'Courier New',monospace;font-size:12px;color:#888">${c.id}</td>
+      <td><span class="badge ${tier.bcls}">${tier.tier}</span></td>
+      <td style="font-weight:700;text-align:center">${c.visits}</td>
+      <td style="font-family:'Courier New',monospace">${fmt(c.total)}₮</td>
+      <td style="color:#2d9b4e;font-weight:700">${tier.pct}%</td>
+      <td>
+        <button class="qr-btn" onclick="event.stopPropagation();showQR('${c.id}')">QR карт</button>
+        <button class="del-btn" onclick="event.stopPropagation();deleteCustomer('${c.id}')">✕</button>
+      </td>
+    </tr>`;
+            }).join('');
+        }
+
+        function deleteCustomer(id) {
+            const c = db.customers.find(x => x.id === id);
+            if (!c) return;
+            if (!confirm(c.name + ' устгах уу?')) return;
+            db.customers = db.customers.filter(x => x.id !== id);
+            db.sales = db.sales.filter(x => x.custId !== id);
+            saveData(db);
+            renderCustomers();
+        }
+
+        function renderStats() {
+            const totalRev = db.sales.reduce((a, s) => a + s.amount, 0);
+            const totalDisc = db.sales.reduce((a, s) => a + s.disc, 0);
+            document.getElementById('s-total-cust').textContent = db.customers.length;
+            document.getElementById('s-total-sales').textContent = db.sales.length;
+            document.getElementById('s-total-rev').textContent = fmt(totalRev / 1000) + 'K';
+            document.getElementById('s-total-disc').textContent = fmt(totalDisc / 1000) + 'K';
+            const el = document.getElementById('all-sales');
+            if (!db.sales.length) { el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>'; return; }
+            el.innerHTML = [...db.sales].reverse().map(s => {
+                const c = db.customers.find(x => x.id === s.custId);
+                return `<div class="rs-item">
+      <div>
+        <div class="rs-name">${c ? c.name : s.custId}</div>
+        <div class="rs-meta">${s.date} · ${s.note}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="rs-amt">${fmt(s.amount)}₮</div>
+        <div class="rs-saved">-${fmt(s.disc)}₮ хөнгөлт</div>
+      </div>
+    </div>`;
+            }).join('');
+        }
+
+        function openAddModal() { document.getElementById('add-modal').style.display = 'flex'; }
+        function closeModal() {
+            document.getElementById('add-modal').style.display = 'none';
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-phone').value = '';
+        }
+
+        function addCustomer() {
+            const name = document.getElementById('new-name').value.trim();
+            const phone = document.getElementById('new-phone').value.trim();
+            if (!name) { alert('Нэр оруулна уу'); return; }
+            if (!phone) { alert('Утас оруулна уу'); return; }
+            const c = { id: genId(), name, phone, visits: 0, total: 0, saved: 0 };
+            db.customers.push(c);
+            saveData(db);
+            closeModal();
+            renderCustomers();
+            showQR(c.id);
+        }
+
+        function quickScan(id) {
+            document.getElementById('barcode-in').value = id;
+            scanCard();
+            showTab('scan');
+        }
+
+        let qrInstance = null;
+        function showQR(id) {
+            const c = db.customers.find(x => x.id === id);
+            if (!c) return;
+            const tier = getTier(c.visits, c.total);
+            document.getElementById('qr-name').textContent = c.name;
+            document.getElementById('qr-id-show').textContent = c.id;
+            document.getElementById('qr-disc-show').textContent = tier.pct + '% хөнгөлт';
+            const el = document.getElementById('qr-canvas');
+            el.innerHTML = '';
+            try {
+                new QRCode(el, {
+                    text: c.id, width: 140, height: 140,
+                    colorDark: '#00aeef', colorLight: '#1a1a1a',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (e) { el.textContent = c.id; }
+            document.getElementById('qr-modal').style.display = 'flex';
+        }
+
+        function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
+
+        function printQR() {
+            window.print();
+        }
+
+        // Init
+        showTab('scan');
+        renderRecentHist();
+        document.getElementById('barcode-in').addEventListener('keydown', e => {
+            if (e.key === 'Enter') scanCard();
+        });
+    </script>
+</body>
+
+</html>
