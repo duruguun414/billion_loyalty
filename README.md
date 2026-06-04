@@ -1,1 +1,1 @@
-# billion_royalty
+# billion_loyalty
