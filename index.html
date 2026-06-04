@@ -763,6 +763,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -950,6 +951,12 @@
     </div>
 
     <script>
+        const SUPABASE_URL = 'https://hdlmkbobagsouqjxmrkv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_epFnczKHubwxsXeRk4veiA_wGnmwzNg';
+        const supabase = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
         const STORAGE_KEY = 'billion_loyalty_v1';
 
         const TIERS = [
@@ -982,7 +989,7 @@
 
         let db = loadData();
 
-       
+
 
         let activeCustomer = null;
 
@@ -1175,6 +1182,16 @@
         document.getElementById('barcode-in').addEventListener('keydown', e => {
             if (e.key === 'Enter') scanCard();
         });
+        async function testSupabase() {
+            const { data, error } = await supabase
+                .from('customers')
+                .select('*');
+
+            console.log('SUPABASE DATA:', data);
+            console.log('SUPABASE ERROR:', error);
+        }
+
+        testSupabase();
     </script>
 </body>
 
