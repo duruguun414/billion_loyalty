@@ -957,7 +957,7 @@
             SUPABASE_URL,
             SUPABASE_KEY
         );
-       const STORAGE_KEY = 'billion_loyalty_v1'; 
+        const STORAGE_KEY = 'billion_loyalty_v1';
 
         const TIERS = [
             { min: 0, pct: 0, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
@@ -1131,17 +1131,49 @@
             document.getElementById('new-phone').value = '';
         }
 
-        function addCustomer() {
+        async function addCustomer() {
+
             const name = document.getElementById('new-name').value.trim();
             const phone = document.getElementById('new-phone').value.trim();
-            if (!name) { alert('Нэр оруулна уу'); return; }
-            if (!phone) { alert('Утас оруулна уу'); return; }
-            const c = { id: genId(), name, phone, visits: 0, total: 0, saved: 0 };
-            db.customers.push(c);
-            saveData(db);
+
+            if (!name) {
+                alert('Нэр оруулна уу');
+                return;
+            }
+
+            if (!phone) {
+                alert('Утас оруулна уу');
+                return;
+            }
+
+            const cardId = genId();
+
+            const { data, error } = await supabaseClient
+                .from('customers')
+                .insert([
+                    {
+                        card_id: cardId,
+                        name: name,
+                        phone: phone,
+                        visits: 0,
+                        total: 0,
+                        saved: 0
+                    }
+                ])
+                .select()
+                .single();
+
+            if (error) {
+                console.log(error);
+                alert('Supabase хадгалж чадсангүй');
+                return;
+            }
+
             closeModal();
-            renderCustomers();
-            showQR(c.id);
+
+            alert('Амжилттай бүртгэгдлээ');
+
+            //showQR(cardId);
         }
 
         function quickScan(id) {
