@@ -953,7 +953,7 @@
     <script>
         const SUPABASE_URL = 'https://hdlmkbobagsouqjxmrkv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_epFnczKHubwxsXeRk4veiA_wGnmwzNg';
-        const supabase = window.supabase.createClient(
+        const supabaseClient = window.supabase.createClient(
             SUPABASE_URL,
             SUPABASE_KEY
         );
@@ -1183,7 +1183,7 @@
             if (e.key === 'Enter') scanCard();
         });
         async function testSupabase() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('customers')
                 .select('*');
 
