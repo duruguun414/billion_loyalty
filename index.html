@@ -982,21 +982,7 @@
 
         let db = loadData();
 
-        // Demo data
-        if (db.customers.length === 0) {
-            db.customers = [
-                { id: 'BAPM-001337', name: 'Батбаяр Дорж', phone: '99112233', visits: 3, total: 4200000, saved: 504000 },
-                { id: 'BAPM-002591', name: 'Мөнхзул Ганаа', phone: '88445566', visits: 6, total: 8900000, saved: 1780000 },
-                { id: 'BAPM-003874', name: 'Энхбат Нарантуяа', phone: '99887766', visits: 1, total: 650000, saved: 32500 },
-            ];
-            db.sales = [
-                { custId: 'BAPM-001337', amount: 1500000, disc: 180000, note: 'Тосны шүүлтүүр Toyota', date: '2026-05-28' },
-                { custId: 'BAPM-002591', amount: 2300000, disc: 460000, note: 'Гальмо диск Nissan', date: '2026-06-01' },
-                { custId: 'BAPM-001337', amount: 900000, disc: 108000, note: 'Хувцасны туузан', date: '2026-06-02' },
-                { custId: 'BAPM-003874', amount: 650000, disc: 32500, note: 'Хаалгаар засвар', date: '2026-06-03' },
-            ];
-            saveData(db);
-        }
+       
 
         let activeCustomer = null;
 
