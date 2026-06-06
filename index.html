@@ -752,11 +752,9 @@
     <div class="topbar">
         <span class="logo">&#9654; BILLION auto parts Mongolia</span>
         <div class="nav">
-            <button class="active" onclick="showTab('scan')">QR
-                &#1059;&#1053;&#1064;&#1059;&#1059;&#1051;&#1040;&#1061;</button>
-            <button
-                onclick="showTab('customers')">&#1067;&#1049;&#1051;&#1063;&#1051;&#1069;&#1069;&#1043;&#1063;&#1048;&#1044;</button>
-            <button onclick="showTab('stats')">&#1057;&#1058;&#1040;&#1058;&#1048;&#1057;&#1058;&#1048;&#1050;</button>
+            <button class="active" onclick="showTab('scan')">QR УНШУУЛАХ</button>
+            <button onclick="showTab('customers')">ҮЙЛЧЛҮҮЛЭГЧИД</button>
+            <button onclick="showTab('stats')">СТАТИСТИК</button>
         </div>
     </div>
 
@@ -895,6 +893,7 @@
 
     </div>
 
+    <!-- Add Customer Modal -->
     <div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeModal()">
         <div class="modal">
             <div class="modal-title">ШИНЭ ҮЙЛЧЛҮҮЛЭГЧ НЭМЭХ</div>
@@ -909,6 +908,7 @@
         </div>
     </div>
 
+    <!-- QR Modal -->
     <div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
         <div class="qr-modal-box">
             <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:4px">УРАМШУУЛАЛ КАРТ</div>
@@ -917,6 +917,13 @@
                 <div class="qr-cid" id="qr-id-show"></div>
                 <div id="qr-canvas"></div>
                 <div class="qr-disc-show" id="qr-disc-show"></div>
+            </div>
+            <div style="display:flex;gap:6px;justify-content:center;margin:10px 0 4px">
+                <button id="mode-screen" class="print-btn" style="background:#00aeef;color:#1a1a1a"
+                    onclick="setQRMode('screen')">&#128065; ДЭЛГЭЦ</button>
+                <button id="mode-print" class="print-btn"
+                    style="background:transparent;color:#aaa;border:1px solid #555"
+                    onclick="setQRMode('print')">&#128424; ХЭВЛЭХ</button>
             </div>
             <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
                 <button class="print-btn" onclick="printQR()">&#128424; ХЭВЛЭХ</button>
@@ -928,15 +935,20 @@
     </div>
 
     <script>
+        // ─── SUPABASE ТОХИРГОО ─────────────────────────────────────────
+        // АНХААРУУЛГА: доорх SUPABASE_KEY-г Supabase dashboard →
+        // Project Settings → API → "anon public" key-р солино уу (eyJ... гэж эхэлдэг)
         const SUPABASE_URL = 'https://hdlmkbobagsouqjxmrkv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_epFnczKHubwxsXeRk4veiA_wGnmwzNg';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // ─── ШАТЛАЛ ТООЦОО ────────────────────────────────────────────
         const TIERS = [
             { min: 0, pct: 0, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
             { min: 2, pct: 5, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
             { min: 5, pct: 10, tier: 'GOLD', tcls: 'tier-gold', bcls: 'b-gold' },
         ];
+
         function getTier(visits, total) {
             let t = TIERS[0];
             for (let i = TIERS.length - 1; i >= 0; i--) {
@@ -953,7 +965,10 @@
 
         let db = { customers: [], sales: [] };
         let activeCustomer = null;
+        let activeQRId = null;
+        let qrMode = 'screen';
 
+        // ─── ТАБ УДИРДЛАГА ────────────────────────────────────────────
         function showTab(t) {
             ['scan', 'customers', 'stats'].forEach(x => {
                 document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none';
@@ -965,6 +980,7 @@
             if (t === 'stats') renderStats();
         }
 
+        // ─── QR УНШУУЛАХ ──────────────────────────────────────────────
         function scanCard() {
             const val = document.getElementById('barcode-in').value.trim();
             const c = db.customers.find(x => x.id === val);
@@ -982,24 +998,24 @@
                 document.getElementById('ctotal').textContent = fmt(c.total / 1000) + 'K';
                 document.getElementById('cdiscount').textContent = tier.pct + '%';
                 document.getElementById('disc-badge').textContent =
-                    '\u2713 \u042d\u041d\u042d \u0423\u0414\u0410\u0410\u0413\u0418\u0419\u041d \u0425\u04e8\u041d\u0413\u04e8\u041b\u04e8\u041b\u0422: '
-                    + tier.pct + '%  \u2014  ' + c.name;
+                    '✓ ЭНЭ УДААГИЙН ХӨНГӨЛӨЛТ: ' + tier.pct + '%  —  ' + c.name;
             }
         }
 
+        // ─── ГҮЙЛГЭЭ ХАДГАЛАХ ─────────────────────────────────────────
         async function saveSale() {
             if (!activeCustomer) return;
             const amt = parseInt(document.getElementById('sale-amount').value) || 0;
-            if (amt <= 0) { alert('\u0414\u04af\u043d \u043e\u0440\u0443\u0443\u043b\u043d\u0430 \u0443\u0443'); return; }
+            if (amt <= 0) { alert('Дүн оруулна уу'); return; }
 
-            const note = document.getElementById('sale-note').value || '\u2014';
+            const note = document.getElementById('sale-note').value || '—';
             const tier = getTier(activeCustomer.visits, activeCustomer.total);
             const disc = Math.round(amt * tier.pct / 100);
 
             const { error: saleError } = await supabaseClient
                 .from('sales')
                 .insert([{ customer_id: activeCustomer.id, amount: amt, disc: disc, note: note }]);
-            if (saleError) { console.error(saleError); alert('\u0413\u04af\u0439\u043b\u0433\u044d\u044d \u0445\u0430\u0434\u0433\u0430\u043b\u0436 \u0447\u0430\u0434\u0441\u0430\u043d\u0433\u04af\u0439'); return; }
+            if (saleError) { console.error(saleError); alert('Гүйлгээ хадгалж чадсангүй'); return; }
 
             const { error: custErr } = await supabaseClient
                 .from('customers')
@@ -1009,40 +1025,40 @@
                     saved: (activeCustomer.saved || 0) + disc
                 })
                 .eq('card_id', activeCustomer.id);
-            if (custErr) { console.error(custErr); alert('\u04ae\u0439\u043b\u0447\u043b\u04af\u04af\u043b\u044d\u0433\u0447 \u0448\u0438\u043d\u044d\u0447\u043b\u0438\u0436 \u0447\u0430\u0434\u0441\u0430\u043d\u0433\u04af\u0439'); return; }
+            if (custErr) { console.error(custErr); alert('Үйлчлүүлэгч шинэчлиж чадсангүй'); return; }
 
-            // FIX A: toast, alert()-г хасав
             const toast = document.getElementById('toast');
-            toast.textContent = '\u2713 \u0410\u043c\u0436\u0438\u043b\u0442\u0442\u0430\u0439 \u0431\u04af\u0440\u0442\u0433\u044d\u0433\u0434\u043b\u044d\u044d \u2014 \u0445\u04e9\u043d\u0433\u04e9\u043b\u04e9\u043b\u0442: ' + fmt(disc) + '\u20ae';
+            toast.textContent = '✓ Амжилттай бүртгэгдлээ — хөнгөлөлт: ' + fmt(disc) + '₮';
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
 
             document.getElementById('sale-amount').value = '';
             document.getElementById('sale-note').value = '';
 
-            // FIX B: sales-г дахин татаж харуулах
             await loadCustomers();
             await loadSales();
             scanCard();
         }
 
+        // ─── СҮҮЛИЙН ГҮЙЛГЭЭ ХАРУУЛАХ ────────────────────────────────
         function renderRecentHist() {
             const sales = db.sales.slice(0, 6);
             const el = document.getElementById('recent-hist');
             if (!sales.length) {
-                el.innerHTML = '<div class="empty">\u0413\u04af\u0439\u043b\u0433\u044d\u044d \u0431\u0430\u0439\u0445\u0433\u04af\u0439</div>';
+                el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>';
                 return;
             }
             el.innerHTML = sales.map(s => {
                 const c = db.customers.find(x => x.id === s.custId);
                 return '<div class="hist-item">'
                     + '<div><div style="font-weight:600;color:#1a1a1a;font-size:12px">' + (c ? c.name : s.custId) + '</div>'
-                    + '<div class="hist-date">' + s.date + ' \xb7 ' + s.note + '</div></div>'
-                    + '<div style="text-align:right"><div class="hist-amt">' + fmt(s.amount) + '\u20ae</div>'
-                    + '<div class="hist-disc">-' + fmt(s.disc) + '\u20ae</div></div></div>';
+                    + '<div class="hist-date">' + s.date + ' · ' + s.note + '</div></div>'
+                    + '<div style="text-align:right"><div class="hist-amt">' + fmt(s.amount) + '₮</div>'
+                    + '<div class="hist-disc">-' + fmt(s.disc) + '₮</div></div></div>';
             }).join('');
         }
 
+        // ─── ҮЙЛЧЛҮҮЛЭГЧДИЙН ЖАГСААЛТ ───────────────────────────────
         function renderCustomers() {
             const q = (document.getElementById('cust-search')?.value || '').toLowerCase();
             const list = db.customers.filter(c =>
@@ -1050,7 +1066,7 @@
             );
             const tb = document.getElementById('cust-tbody');
             if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="7" class="empty">\u04ae\u0439\u043b\u0447\u043b\u04af\u04af\u043b\u044d\u0433\u0447 \u043e\u043b\u0434\u0441\u043e\u043d\u0433\u04af\u0439</td></tr>';
+                tb.innerHTML = '<tr><td colspan="7" class="empty">Үйлчлүүлэгч олдсонгүй</td></tr>';
                 return;
             }
             tb.innerHTML = list.map(c => {
@@ -1060,26 +1076,28 @@
                     + '<td style="font-family:\'Courier New\',monospace;font-size:12px;color:#888">' + c.id + '</td>'
                     + '<td><span class="badge ' + tier.bcls + '">' + tier.tier + '</span></td>'
                     + '<td style="font-weight:700;text-align:center">' + c.visits + '</td>'
-                    + '<td style="font-family:\'Courier New\',monospace">' + fmt(c.total) + '\u20ae</td>'
+                    + '<td style="font-family:\'Courier New\',monospace">' + fmt(c.total) + '₮</td>'
                     + '<td style="color:#2d9b4e;font-weight:700">' + tier.pct + '%</td>'
                     + '<td>'
-                    + '<button class="qr-btn" onclick="event.stopPropagation();showQR(\'' + c.id + '\')">QR \u043a\u0430\u0440\u0442</button>'
-                    + '<button class="del-btn" onclick="event.stopPropagation();deleteCustomer(\'' + c.id + '\')">\u2715</button>'
+                    + '<button class="qr-btn" onclick="event.stopPropagation();showQR(\'' + c.id + '\')">QR карт</button>'
+                    + '<button class="del-btn" onclick="event.stopPropagation();deleteCustomer(\'' + c.id + '\')">✕</button>'
                     + '</td></tr>';
             }).join('');
         }
 
+        // ─── ҮЙЛЧЛҮҮЛЭГЧ УСТГАХ ──────────────────────────────────────
         async function deleteCustomer(id) {
             const c = db.customers.find(x => x.id === id);
             if (!c) return;
-            if (!confirm(c.name + ' \u0443\u0441\u0442\u0433\u0430\u0445 \u0443\u0443?')) return;
+            if (!confirm(c.name + ' устгах уу?')) return;
             const { error } = await supabaseClient.from('customers').delete().eq('card_id', id);
-            if (error) { console.error(error); alert('\u0423\u0441\u0442\u0433\u0430\u0436 \u0447\u0430\u0434\u0441\u0430\u043d\u0433\u04af\u0439'); return; }
+            if (error) { console.error(error); alert('Устгаж чадсангүй'); return; }
             db.customers = db.customers.filter(x => x.id !== id);
             renderCustomers();
-            alert('\u0423\u0441\u0442\u0433\u0430\u0433\u0434\u043b\u0430\u0430');
+            alert('Устгагдлаа');
         }
 
+        // ─── СТАТИСТИК ────────────────────────────────────────────────
         function renderStats() {
             const totalRev = db.sales.reduce((a, s) => a + s.amount, 0);
             const totalDisc = db.sales.reduce((a, s) => a + s.disc, 0);
@@ -1089,19 +1107,20 @@
             document.getElementById('s-total-disc').textContent = fmt(totalDisc / 1000) + 'K';
             const el = document.getElementById('all-sales');
             if (!db.sales.length) {
-                el.innerHTML = '<div class="empty">\u0413\u04af\u0439\u043b\u0433\u044d\u044d \u0431\u0430\u0439\u0445\u0433\u04af\u0439</div>';
+                el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>';
                 return;
             }
             el.innerHTML = db.sales.map(s => {
                 const c = db.customers.find(x => x.id === s.custId);
                 return '<div class="rs-item">'
                     + '<div><div class="rs-name">' + (c ? c.name : s.custId) + '</div>'
-                    + '<div class="rs-meta">' + s.date + ' \xb7 ' + s.note + '</div></div>'
-                    + '<div style="text-align:right"><div class="rs-amt">' + fmt(s.amount) + '\u20ae</div>'
-                    + '<div class="rs-saved">-' + fmt(s.disc) + '\u20ae \u0445\u04e9\u043d\u0433\u04e9\u043b\u04e9\u043b\u0442</div></div></div>';
+                    + '<div class="rs-meta">' + s.date + ' · ' + s.note + '</div></div>'
+                    + '<div style="text-align:right"><div class="rs-amt">' + fmt(s.amount) + '₮</div>'
+                    + '<div class="rs-saved">-' + fmt(s.disc) + '₮ хөнгөлөлт</div></div></div>';
             }).join('');
         }
 
+        // ─── MODAL УДИРДЛАГА ──────────────────────────────────────────
         function openAddModal() { document.getElementById('add-modal').style.display = 'flex'; }
         function closeModal() {
             document.getElementById('add-modal').style.display = 'none';
@@ -1109,51 +1128,86 @@
             document.getElementById('new-phone').value = '';
         }
 
+        // ─── ШИНЭ ҮЙЛЧЛҮҮЛЭГЧ НЭМЭХ ─────────────────────────────────
         async function addCustomer() {
             const name = document.getElementById('new-name').value.trim();
             const phone = document.getElementById('new-phone').value.trim();
-            if (!name) { alert('\u041d\u044d\u0440 \u043e\u0440\u0443\u0443\u043b\u043d\u0430 \u0443\u0443'); return; }
-            if (!phone) { alert('\u0423\u0442\u0430\u0441 \u043e\u0440\u0443\u0443\u043b\u043d\u0430 \u0443\u0443'); return; }
+            if (!name) { alert('Нэр оруулна уу'); return; }
+            if (!phone) { alert('Утас оруулна уу'); return; }
             const cardId = genId();
             const { error } = await supabaseClient
                 .from('customers')
-                .insert([{ card_id: cardId, name, phone, visits: 0, total: 0, saved: 0 }])
-                .select().single();
-            if (error) { console.error(error); alert('Supabase \u0445\u0430\u0434\u0433\u0430\u043b\u0436 \u0447\u0430\u0434\u0441\u0430\u043d\u0433\u04af\u0439'); return; }
+                .insert([{ card_id: cardId, name, phone, visits: 0, total: 0, saved: 0 }]);
+            if (error) { console.error(error); alert('Supabase хадгалж чадсангүй'); return; }
             closeModal();
             await loadCustomers();
-            alert('\u0410\u043c\u0436\u0438\u043b\u0442\u0442\u0430\u0439 \u0431\u04af\u0440\u0442\u0433\u044d\u0433\u0434\u043b\u044d\u044d');
             showQR(cardId);
         }
 
+        // ─── ХУРДАН СКАН ──────────────────────────────────────────────
         function quickScan(id) {
             document.getElementById('barcode-in').value = id;
             scanCard();
             showTab('scan');
         }
 
+        // ─── QR MODAL ─────────────────────────────────────────────────
+        // FIX: activeQRId тохируулж, renderQRCanvas-г дуудах болгов
         function showQR(id) {
             const c = db.customers.find(x => x.id === id);
             if (!c) return;
+            activeQRId = id;
+            qrMode = 'screen';
             const tier = getTier(c.visits, c.total);
             document.getElementById('qr-name').textContent = c.name;
             document.getElementById('qr-id-show').textContent = c.id;
-            document.getElementById('qr-disc-show').textContent = tier.pct + '% \u0445\u04e9\u043d\u0433\u04e9\u043b\u04e9\u043b\u0442';
-            const el = document.getElementById('qr-canvas');
-            el.innerHTML = '';
-            try {
-                new QRCode(el, {
-                    text: c.id, width: 140, height: 140,
-                    colorDark: '#00aeef', colorLight: '#1a1a1a', correctLevel: QRCode.CorrectLevel.M
-                });
-            } catch (e) { el.textContent = c.id; }
+            document.getElementById('qr-disc-show').textContent = tier.pct + '% хөнгөлөлт';
+            // Mode товчны анхны байдал тохируулах
+            document.getElementById('mode-screen').style.background = '#00aeef';
+            document.getElementById('mode-screen').style.color = '#1a1a1a';
+            document.getElementById('mode-print').style.background = 'transparent';
+            document.getElementById('mode-print').style.color = '#aaa';
+            renderQRCanvas(id, 'screen');
             document.getElementById('qr-modal').style.display = 'flex';
         }
+
         function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
         function printQR() { window.print(); }
 
-        // ─── DATA LOADERS ─────────────────────────────────────────────
+        // FIX: setQRMode → renderQRCanvas дуудна (рекурс арилгав)
+        function setQRMode(mode) {
+            qrMode = mode;
+            document.getElementById('mode-screen').style.background = mode === 'screen' ? '#00aeef' : 'transparent';
+            document.getElementById('mode-screen').style.color = mode === 'screen' ? '#1a1a1a' : '#aaa';
+            document.getElementById('mode-screen').style.border = mode === 'screen' ? 'none' : '1px solid #555';
+            document.getElementById('mode-print').style.background = mode === 'print' ? '#00aeef' : 'transparent';
+            document.getElementById('mode-print').style.color = mode === 'print' ? '#1a1a1a' : '#aaa';
+            document.getElementById('mode-print').style.border = mode === 'print' ? 'none' : '1px solid #555';
+            if (activeQRId) renderQRCanvas(activeQRId, mode);
+        }
 
+        // FIX: renderQR → renderQRCanvas болгов, size зөв ашиглагдана, рекурс байхгүй
+        function renderQRCanvas(id, mode) {
+            const size = mode === 'print' ? 437 : 180;
+            const el = document.getElementById('qr-canvas');
+            el.innerHTML = '';
+            const c = db.customers.find(x => x.id === id);
+            if (!c) return;
+            try {
+                new QRCode(el, {
+                    text: c.id,
+                    width: size,
+                    height: size,
+                    colorDark: '#00aeef',
+                    colorLight: '#1a1a1a',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (e) {
+                el.textContent = c.id;
+            }
+        }
+
+        // ─── ӨГӨГДӨЛ ТАТАХ ────────────────────────────────────────────
         async function loadCustomers() {
             const { data, error } = await supabaseClient.from('customers').select('*');
             if (error) { console.error(error); return; }
@@ -1167,7 +1221,6 @@
             }));
         }
 
-        // *** FIX 1: энэ функц огт байгаагүй — шинээр нэмлээ ***
         async function loadSales() {
             const { data, error } = await supabaseClient
                 .from('sales')
@@ -1178,13 +1231,13 @@
                 custId: r.customer_id,
                 amount: r.amount,
                 disc: r.disc || 0,
-                note: r.note || '\u2014',
+                note: r.note || '—',
                 date: new Date(r.created_at).toLocaleDateString('mn-MN')
             }));
             renderRecentHist();
         }
 
-        // *** FIX 2: init-д loadSales дуудагдахгүй байсан ***
+        // ─── ЭХЛҮҮЛЭХ ─────────────────────────────────────────────────
         (async () => {
             await loadCustomers();
             await loadSales();
