@@ -1008,24 +1008,43 @@
             const amt = parseInt(document.getElementById('sale-amount').value) || 0;
             if (amt <= 0) { alert('Дүн оруулна уу'); return; }
 
-            const note = document.getElementById('sale-note').value || '—';
+            const note = document.getElementById('sale-note').value.trim() || '—';
             const tier = getTier(activeCustomer.visits, activeCustomer.total);
             const disc = Math.round(amt * tier.pct / 100);
 
-            const { error: saleError } = await supabaseClient
-                .from('sales')
-                .insert([{ customer_id: activeCustomer.id, amount: amt, disc: disc, note: note }]);
-            if (saleError) { console.error(saleError); alert('Гүйлгээ хадгалж чадсангүй'); return; }
+            const newVisits = activeCustomer.visits + 1;
+            const newTotal = activeCustomer.total + amt;
+            const newSaved = (activeCustomer.saved || 0) + disc;
 
-            const { error: custErr } = await supabaseClient
+            // 1. sales table-д бичих
+            const { data: saleData, error: saleError } = await supabaseClient
+                .from('sales')
+                .insert([{ card_id: activeCustomer.id, amount: amt, disc: disc, note: note }])
+                .select();
+            if (saleError) {
+                console.error('SALES INSERT АЛДАА:', saleError);
+                alert('Гүйлгээ хадгалж чадсангүй:\n' + saleError.message);
+                return;
+            }
+            console.log('✓ Sales insert амжилттай:', saleData);
+
+            // 2. customers table шинэчлэх
+            const { data: custData, error: custErr } = await supabaseClient
                 .from('customers')
-                .update({
-                    visits: activeCustomer.visits + 1,
-                    total: activeCustomer.total + amt,
-                    saved: (activeCustomer.saved || 0) + disc
-                })
-                .eq('card_id', activeCustomer.id);
-            if (custErr) { console.error(custErr); alert('Үйлчлүүлэгч шинэчлиж чадсангүй'); return; }
+                .update({ visits: newVisits, total: newTotal, saved: newSaved })
+                .eq('card_id', activeCustomer.id)
+                .select();
+            if (custErr) {
+                console.error('CUSTOMERS UPDATE АЛДАА:', custErr);
+                alert('Үйлчлүүлэгч шинэчлиж чадсангүй:\n' + custErr.message);
+                return;
+            }
+            if (!custData || custData.length === 0) {
+                console.warn('UPDATE буцаасан мөр байхгүй — card_id олдсонгүй эсвэл RLS хориглосон байж болно. card_id:', activeCustomer.id);
+                alert('Үйлчлүүлэгч шинэчлэгдсэнгүй.\nSupabase Console → customers → card_id: ' + activeCustomer.id + ' байгаа эсэхийг шалгана уу.\nМөн RLS Policy зөвшөөрч байгаа эсэхийг шалгана уу.');
+                return;
+            }
+            console.log('✓ Customers update амжилттай:', custData);
 
             const toast = document.getElementById('toast');
             toast.textContent = '✓ Амжилттай бүртгэгдлээ — хөнгөлөлт: ' + fmt(disc) + '₮';
@@ -1228,7 +1247,7 @@
                 .order('created_at', { ascending: false });
             if (error) { console.error(error); return; }
             db.sales = data.map(r => ({
-                custId: r.customer_id,
+                custId: r.card_id,
                 amount: r.amount,
                 disc: r.disc || 0,
                 note: r.note || '—',
