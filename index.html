@@ -599,6 +599,7 @@
             background: #237a3d
         }
 
+        /* QR Modal */
         .qr-modal-box {
             background: #fff;
             border-radius: 12px;
@@ -662,6 +663,7 @@
             background: #333
         }
 
+        /* Stats page */
         .stats-page {
             display: none
         }
@@ -752,6 +754,7 @@
             letter-spacing: 1px
         }
 
+        /* Sticker Box Styles */
         .sticker-modal-box {
             background: #fff;
             border-radius: 12px;
@@ -775,17 +778,19 @@
             margin-bottom: 16px
         }
 
+        /* Стикэрийн үндсэн хэмжээ - 2.32 x 0.83 inch */
         .sticker-preview {
-            width: 280px;
-            height: 100px;
+            width: 2.32in;
+            height: 0.83in;
             background: #0c1031;
-            border-radius: 8px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
-            padding: 10px 12px;
-            gap: 10px;
+            padding: 6px 8px;
+            gap: 8px;
             position: relative;
-            overflow: hidden
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .sp-accent {
@@ -793,81 +798,99 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 4px;
-            background: #00aeef;
-            border-radius: 8px 0 0 8px
+            width: 3px;
+            background: #00aeef
         }
 
         .sp-dots {
             position: absolute;
-            right: 8px;
-            top: 6px;
+            right: 6px;
+            top: 4px;
             display: flex;
-            gap: 3px
+            gap: 2px
         }
 
         .sp-dots span {
-            width: 4px;
-            height: 4px;
+            width: 3px;
+            height: 3px;
             border-radius: 50%;
             background: rgba(0, 174, 239, 0.35);
             display: block
         }
 
         .sp-qr {
-            width: 72px;
-            height: 72px;
-            flex-shrink: 0
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            background: #fff;
+            padding: 2px;
+            border-radius: 2px
+        }
+
+        .sp-qr canvas,
+        .sp-qr img {
+            width: 44px !important;
+            height: 44px !important;
+            display: block
         }
 
         .sp-info {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            text-align: left
+            justify-content: center;
+            text-align: left;
+            overflow: hidden
         }
 
         .sp-logo {
-            font-size: 9px;
-            font-weight: 700;
+            font-size: 7px;
+            font-weight: 800;
             color: #00aeef;
-            letter-spacing: 1.5px;
-            font-family: Arial, sans-serif
+            letter-spacing: 1px;
+            font-family: Arial, sans-serif;
+            line-height: 1
         }
 
         .sp-id {
-            font-size: 13px;
+            font-size: 10px;
             font-weight: 700;
             color: #fff;
             font-family: 'Courier New', monospace;
-            letter-spacing: 0.5px
+            white-space: nowrap;
+            margin: 1px 0
         }
 
         .sp-name {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.7);
-            font-family: Arial, sans-serif
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: Arial, sans-serif;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100px;
+            line-height: 1
         }
 
         .sp-tier {
             display: inline-block;
-            font-size: 9px;
+            font-size: 6.5px;
             font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 4px;
+            padding: 1px 4px;
+            border-radius: 2px;
             margin-top: 2px;
             font-family: Arial, sans-serif;
-            width: fit-content
+            width: fit-content;
+            line-height: 1
         }
 
         .sp-tier-bronze {
-            background: rgba(205, 127, 50, 0.2);
-            color: #cd9a50;
+            background: rgba(205, 127, 50, 0.25);
+            color: #ffb86c;
             border: 0.5px solid rgba(205, 127, 50, 0.5)
         }
 
         .sp-tier-gold {
-            background: rgba(232, 197, 71, 0.2);
+            background: rgba(232, 197, 71, 0.25);
             color: #e8c547;
             border: 0.5px solid rgba(232, 197, 71, 0.5)
         }
@@ -931,29 +954,70 @@
             }
         }
 
+        /* ─── ХЭВЛЭХ ҮЕИЙН СТИЛЬ (МАШ ЧУХАЛ) ─────────────────────────── */
         @media print {
 
-            .topbar,
-            .nav,
-            .save-sale-btn,
-            .add-cust-btn,
-            .qr-btn,
-            .edit-btn,
-            .sticker-btn,
-            .del-btn,
-            .print-btn,
-            .btn-cancel {
-                display: none !important
+            /* Стикэр хэвлэх горим идэвхжсэн үед */
+            body.printing-sticker {
+                background: #fff !important;
+                min-height: auto !important;
             }
 
-            .modal-overlay {
-                position: static !important;
-                background: none !important
+            body.printing-sticker .topbar,
+            body.printing-sticker .content,
+            body.printing-sticker .modal-overlay:not(#sticker-modal),
+            body.printing-sticker .sticker-modal-box>*:not(.sticker-preview-wrap),
+            body.printing-sticker .sticker-modal-title,
+            body.printing-sticker .sticker-info-box,
+            body.printing-sticker .sticker-modal-btns {
+                display: none !important;
             }
 
-            .qr-modal-box {
+            body.printing-sticker .modal-overlay#sticker-modal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 2.32in !important;
+                height: 0.83in !important;
+                background: transparent !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            body.printing-sticker .sticker-modal-box {
+                border: none !important;
                 box-shadow: none !important;
-                border: none !important
+                padding: 0 !important;
+                margin: 0 !important;
+                background: transparent !important;
+                width: 2.32in !important;
+                height: 0.83in !important;
+            }
+
+            body.printing-sticker .sticker-preview-wrap {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 2.32in !important;
+                height: 0.83in !important;
+            }
+
+            body.printing-sticker .sticker-preview {
+                border: none !important;
+                margin: 0 !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Хуудасны ирмэг, хэмжээг хэвлэгчид шууд тушаах */
+            @page {
+                size: 2.32in 0.83in;
+                margin: 0 !important;
             }
         }
     </style>
@@ -971,7 +1035,6 @@
     </div>
 
     <div class="content">
-
         <div id="tab-scan">
             <div class="scan-wrap">
                 <div class="scan-box">
@@ -1102,10 +1165,8 @@
                 <div id="all-sales"></div>
             </div>
         </div>
-
     </div>
 
-    <!-- Add Customer Modal -->
     <div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeModal()">
         <div class="modal">
             <div class="modal-title">ШИНЭ ҮЙЛЧЛҮҮЛЭГЧ НЭМЭХ</div>
@@ -1120,7 +1181,6 @@
         </div>
     </div>
 
-    <!-- Edit Customer Modal -->
     <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
         <div class="modal">
             <div class="modal-title">ҮЙЛЧЛҮҮЛЭГЧИЙН МЭДЭЭЛЭЛ ЗАСАХ</div>
@@ -1138,7 +1198,6 @@
         </div>
     </div>
 
-    <!-- QR Modal -->
     <div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
         <div class="qr-modal-box">
             <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:4px">УРАМШУУЛАЛ КАРТ</div>
@@ -1157,7 +1216,6 @@
         </div>
     </div>
 
-    <!-- Sticker Modal -->
     <div class="modal-overlay" id="sticker-modal" onclick="if(event.target===this)closeStickerModal()">
         <div class="sticker-modal-box">
             <div class="sticker-modal-title">&#128424; STICKER ХЭВЛЭХ — 2.32 × 0.83 INCH</div>
@@ -1176,13 +1234,14 @@
             </div>
             <div class="sticker-info-box">
                 <strong>Хэвлэх заавар:</strong><br>
-                1. "ХЭВЛЭХ" дарна → Системийн хэвлэх цонх нээгдэнэ.<br>
-                2. <strong>Paper size</strong> → Custom → <strong>2.32 × 0.83 in</strong><br>
-                3. <strong>Margins</strong> → <strong>None</strong><br>
-                4. <strong>Scale</strong> → <strong>100%</strong>
+                1. "ХЭВЛЭХ" дарахад принтер шууд бэлэн болно.<br>
+                2. Хэрэв буруу харагдвал хэвлэх тохиргооноос:<br>
+                - <strong>Paper size:</strong> Custom (2.32 x 0.83 in)<br>
+                - <strong>Margins:</strong> None эсвэл 0<br>
+                - <strong>Layout:</strong> Landscape (Хэвтээ) эсвэл Автомат болгоно.
             </div>
             <div class="sticker-modal-btns">
-                <button class="btn-print-sticker" onclick="window.print()">&#128424; ХЭВЛЭХ</button>
+                <button class="btn-print-sticker" onclick="printStickerOnly()">&#128424; ХЭВЛЭХ</button>
                 <button class="btn-cancel"
                     style="background:transparent;border:1px solid #ddd;color:#888;padding:9px 20px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px"
                     onclick="closeStickerModal()">ХААХ</button>
@@ -1191,12 +1250,10 @@
     </div>
 
     <script>
-        // ─── SUPABASE ТОХИРГОО ─────────────────────────────────────────
         const SUPABASE_URL = 'https://hdlmkbobagsouqjxmrkv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_epFnczKHubwxsXeRk4veiA_wGnmwzNg';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // ─── ШАТЛАЛ ТООЦОО ────────────────────────────────────────────
         const TIERS = [
             { min: 0, pct: 0, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
             { min: 2, pct: 5, tier: 'BRONZE', tcls: 'tier-bronze', bcls: 'b-bronze' },
@@ -1219,44 +1276,28 @@
 
         let db = { customers: [], sales: [] };
         let activeCustomer = null;
-        let qrGenerator = null;
 
-        // ─── ӨГӨГДӨЛ ТАТАЖ УНШИХ ФУНКЦҮҮД ─────────────────────────────────
         async function loadCustomers() {
             const { data, error } = await supabaseClient.from('customers').select('*').order('created_at', { ascending: false });
-            if (error) console.error("Үйлчлүүлэгч татахад алдаа гарлаа:", error);
-            else {
+            if (!error && data) {
                 db.customers = data.map(c => ({
-                    id: c.card_id,
-                    name: c.name,
-                    phone: c.phone,
-                    visits: c.visits || 0,
-                    total: c.total || 0,
-                    saved: c.saved || 0
+                    id: c.card_id, name: c.name, phone: c.phone, visits: c.visits || 0, total: c.total || 0, saved: c.saved || 0
                 }));
             }
         }
 
         async function loadSales() {
             const { data, error } = await supabaseClient.from('sales').select('*').order('created_at', { ascending: false });
-            if (error) console.error("Гүйлгээ татахад алдаа гарлаа:", error);
-            else {
+            if (!error && data) {
                 db.sales = data.map(s => ({
-                    id: s.id,
-                    card_id: s.card_id,
-                    amount: s.amount,
-                    disc: s.disc,
-                    note: s.note,
+                    id: s.id, card_id: s.card_id, amount: s.amount, disc: s.disc, note: s.note,
                     date: new Date(s.created_at).toLocaleDateString('mn-MN')
                 }));
             }
         }
 
-        // ─── ТАБ УДИРДЛАГА ────────────────────────────────────────────
         function showTab(t) {
-            ['scan', 'customers', 'stats'].forEach(x => {
-                document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none';
-            });
+            ['scan', 'customers', 'stats'].forEach(x => { document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none'; });
             document.querySelectorAll('.nav button').forEach((b, i) => {
                 const tabs = ['scan', 'customers', 'stats'];
                 b.classList.toggle('active', tabs[i] === t);
@@ -1266,7 +1307,6 @@
             if (t === 'stats') renderStats();
         }
 
-        // ─── QR УНШУУЛАХ / ХАЙХ ─────────────────────────────────────────
         function scanCard() {
             const val = document.getElementById('barcode-in').value.trim().toUpperCase();
             const c = db.customers.find(x => x.id.trim().toUpperCase() === val);
@@ -1293,7 +1333,6 @@
             scanCard();
         }
 
-        // ─── ГҮЙЛГЭЭ ХАДГАЛАХ ─────────────────────────────────────────
         async function saveSale() {
             if (!activeCustomer) return;
             const amt = parseInt(document.getElementById('sale-amount').value) || 0;
@@ -1307,75 +1346,41 @@
             const newTotal = activeCustomer.total + amt;
             const newSaved = (activeCustomer.saved || 0) + disc;
 
-            const { error: saleError } = await supabaseClient
-                .from('sales')
-                .insert([{ card_id: activeCustomer.id, amount: amt, disc: disc, note: note }]);
-            if (saleError) {
-                alert('Гүйлгээ хадгалж чадсангүй:\n' + saleError.message);
-                return;
-            }
+            const { error: saleError } = await supabaseClient.from('sales').insert([{ card_id: activeCustomer.id, amount: amt, disc: disc, note: note }]);
+            if (saleError) { alert('Алдаа гарлаа'); return; }
 
-            const { error: custErr } = await supabaseClient
-                .from('customers')
-                .update({ visits: newVisits, total: newTotal, saved: newSaved })
-                .eq('card_id', activeCustomer.id);
-            if (custErr) {
-                alert('Үйлчлүүлэгч шинэчлэж чадсангүй:\n' + custErr.message);
-                return;
-            }
-
-            const toast = document.getElementById('toast');
-            toast.textContent = '✓ Амжилттай бүртгэгдлээ — хөнгөлөлт: ' + fmt(disc) + '₮';
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            await supabaseClient.from('customers').update({ visits: newVisits, total: newTotal, saved: newSaved }).eq('card_id', activeCustomer.id);
 
             document.getElementById('sale-amount').value = '';
             document.getElementById('sale-note').value = '';
-
-            await loadCustomers();
-            await loadSales();
-            scanCard();
-            renderRecentHist();
+            await loadCustomers(); await loadSales();
+            scanCard(); renderRecentHist();
         }
 
-        // ─── СҮҮЛИЙН ГҮЙЛГЭЭ ХАРУУЛАХ ────────────────────────────────
         function renderRecentHist() {
             const sales = db.sales.slice(0, 6);
             const el = document.getElementById('recent-hist');
-            if (!sales.length) {
-                el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>';
-                return;
-            }
+            if (!sales.length) { el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>'; return; }
             el.innerHTML = sales.map(s => {
                 const c = db.customers.find(x => x.id === s.card_id);
-                return '<div class="hist-item">'
-                    + '<div><div style="font-weight:600;color:#1a1a1a;font-size:12px">' + (c ? c.name : s.card_id) + '</div>'
-                    + '<div class="hist-date">' + s.date + ' · ' + s.note + '</div></div>'
-                    + '<div style="text-align:right"><div class="hist-amt">' + fmt(s.amount) + '₮</div>'
-                    + '<div class="hist-disc">-' + fmt(s.disc) + '₮</div></div></div>';
+                return '<div class="hist-item"><div><div style="font-weight:600">' + (c ? c.name : s.card_id) + '</div><div class="hist-date">' + s.date + '</div></div><div style="text-align:right"><div class="hist-amt">' + fmt(s.amount) + '₮</div></div></div>';
             }).join('');
         }
 
-        // ─── ҮЙЛЧЛҮҮЛЭГЧДИЙН ЖАГСААЛТ ───────────────────────────────
         function renderCustomers() {
             const q = (document.getElementById('cust-search')?.value || '').toLowerCase();
-            const list = db.customers.filter(c =>
-                !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.id.toLowerCase().includes(q)
-            );
+            const list = db.customers.filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.id.toLowerCase().includes(q));
             const tb = document.getElementById('cust-tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="7" class="empty">Үйлчлүүлэгч олдсонгүй</td></tr>';
-                return;
-            }
+            if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Олдсонгүй</td></tr>'; return; }
             tb.innerHTML = list.map(c => {
                 const tier = getTier(c.visits, c.total);
                 return '<tr onclick="quickScan(\'' + c.id + '\')">'
                     + '<td><div style="font-weight:600">' + c.name + '</div><div style="font-size:11px;color:#aaa">' + c.phone + '</div></td>'
-                    + '<td style="font-family:\'Courier New\',monospace;font-size:12px;color:#888">' + c.id + '</td>'
+                    + '<td>' + c.id + '</td>'
                     + '<td><span class="badge ' + tier.bcls + '">' + tier.tier + '</span></td>'
-                    + '<td style="font-weight:700;text-align:center">' + c.visits + '</td>'
-                    + '<td style="font-family:\'Courier New\',monospace">' + fmt(c.total) + '₮</td>'
-                    + '<td style="color:#2d9b4e;font-weight:700">' + tier.pct + '%</td>'
+                    + '<td style="text-align:center">' + c.visits + '</td>'
+                    + '<td>' + fmt(c.total) + '₮</td>'
+                    + '<td>' + tier.pct + '%</td>'
                     + '<td><div class="action-btns">'
                     + '<button class="qr-btn" onclick="event.stopPropagation();showQR(\'' + c.id + '\')">QR карт</button>'
                     + '<button class="edit-btn" onclick="event.stopPropagation();openEditModal(\'' + c.id + '\')">📝 Засах</button>'
@@ -1385,162 +1390,99 @@
             }).join('');
         }
 
-        // ─── ҮЙЛЧЛҮҮЛЭГЧ НЭМЭХ МЕХАНИЗМ ───────────────────────────────
         function openAddModal() { document.getElementById('add-modal').style.display = 'flex'; }
         function closeModal() { document.getElementById('add-modal').style.display = 'none'; }
 
         async function addCustomer() {
             const name = document.getElementById('new-name').value.trim();
             const phone = document.getElementById('new-phone').value.trim();
-            if (!name || !phone) { alert("Нэр болон утсаа оруулна уу."); return; }
-
+            if (!name || !phone) return;
             const cardId = genId();
-            const { error } = await supabaseClient.from('customers').insert([{ card_id: cardId, name: name, phone: phone, visits: 0, total: 0, saved: 0 }]);
-
-            if (error) {
-                alert("Үйлчлүүлэгч нэмэхэд алдаа гарлаа: " + error.message);
-            } else {
-                closeModal();
-                document.getElementById('new-name').value = '';
-                document.getElementById('new-phone').value = '';
-                await loadCustomers();
-                renderCustomers();
-                openStickerModal(cardId);
-            }
+            await supabaseClient.from('customers').insert([{ card_id: cardId, name: name, phone: phone }]);
+            closeModal();
+            await loadCustomers(); renderCustomers();
+            openStickerModal(cardId);
         }
 
-        // ─── ҮЙЛЧЛҮҮЛЭГЧИЙН МЭДЭЭЛЭЛ ЗАСАХ ФУНКЦҮҮД ───────────────────────
         function openEditModal(id) {
-            const c = db.customers.find(x => x.id === id);
-            if (!c) return;
+            const c = db.customers.find(x => x.id === id); if (!c) return;
             document.getElementById('edit-card-id').value = c.id;
             document.getElementById('edit-id-display').value = c.id;
             document.getElementById('edit-name').value = c.name;
             document.getElementById('edit-phone').value = c.phone;
             document.getElementById('edit-modal').style.display = 'flex';
         }
-
         function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
 
         async function updateCustomer() {
             const cardId = document.getElementById('edit-card-id').value;
             const newName = document.getElementById('edit-name').value.trim();
             const newPhone = document.getElementById('edit-phone').value.trim();
-
-            if (!newName || !newPhone) { alert("Нэр болон утсаа оруулна уу."); return; }
-
-            const { error } = await supabaseClient
-                .from('customers')
-                .update({ name: newName, phone: newPhone })
-                .eq('card_id', cardId);
-
-            if (error) {
-                alert('Мэдээлэл шинэчлэхэд алдаа гарлаа: ' + error.message);
-            } else {
-                closeEditModal();
-                await loadCustomers(); // Локал өгөгдлийг дахин ачаалах
-                renderCustomers(); // Жагсаалтыг шинэчлэх
-
-                // Хэрэв идэвхтэй QR уншуулах хуудас дээр нээлттэй байсан бол тэнд бас шинэчилнэ
-                if (activeCustomer && activeCustomer.id === cardId) {
-                    scanCard();
-                }
-                alert('Үйлчлүүлэгчийн мэдээлэл амжилттай шинэчлэгдлээ.');
-            }
+            await supabaseClient.from('customers').update({ name: newName, phone: newPhone }).eq('card_id', cardId);
+            closeEditModal(); await loadCustomers(); renderCustomers();
         }
 
-        // ─── ҮЙЛЧЛҮҮЛЭГЧ УСТГАХ ──────────────────────────────────────
         async function deleteCustomer(id) {
-            if (!confirm('Энэ үйлчлүүлэгчийг устгахдаа итгэлтэй байна уу?')) return;
-
+            if (!confirm('Устгах уу?')) return;
             await supabaseClient.from('sales').delete().eq('card_id', id);
-            const { error } = await supabaseClient.from('customers').delete().eq('card_id', id);
-            if (error) {
-                alert('Устгаж чадсангүй: ' + error.message);
-            } else {
-                await loadCustomers();
-                await loadSales();
-                renderCustomers();
-                if (activeCustomer && activeCustomer.id === id) {
-                    document.getElementById('customer-display').style.display = 'none';
-                    activeCustomer = null;
-                }
-            }
+            await supabaseClient.from('customers').delete().eq('card_id', id);
+            await loadCustomers(); await loadSales(); renderCustomers();
         }
 
-        // ─── QR МОДАЛ УДИРДЛАГА ───────────────────────────────────────
         function showQR(id) {
-            const c = db.customers.find(x => x.id === id);
-            if (!c) return;
+            const c = db.customers.find(x => x.id === id); if (!c) return;
             const tier = getTier(c.visits, c.total);
             document.getElementById('qr-name').textContent = c.name;
             document.getElementById('qr-id-show').textContent = c.id;
             document.getElementById('qr-disc-show').textContent = "ХӨНГӨЛӨЛТ: " + tier.pct + "%";
-
             document.getElementById('qr-canvas').innerHTML = '';
-            qrGenerator = new QRCode(document.getElementById('qr-canvas'), {
-                text: c.id,
-                width: 140,
-                height: 140
-            });
+            new QRCode(document.getElementById('qr-canvas'), { text: c.id, width: 140, height: 140 });
             document.getElementById('qr-modal').style.display = 'flex';
         }
         function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
 
-        // ─── СТИКЕР МОДАЛ УДИРДЛАГА ────────────────────────────────────
         function openStickerModal(id) {
-            const c = db.customers.find(x => x.id === id);
-            if (!c) return;
+            const c = db.customers.find(x => x.id === id); if (!c) return;
             const tier = getTier(c.visits, c.total);
             document.getElementById('sp-id').textContent = c.id;
             document.getElementById('sp-name').textContent = c.name;
             document.getElementById('sp-tier').textContent = tier.tier;
             document.getElementById('sp-tier').className = 'sp-tier sp-tier-' + tier.tier.toLowerCase();
-
             document.getElementById('sp-qr-wrap').innerHTML = '';
-            new QRCode(document.getElementById('sp-qr-wrap'), {
-                text: c.id,
-                width: 72,
-                height: 72
-            });
+            new QRCode(document.getElementById('sp-qr-wrap'), { text: c.id, width: 44, height: 44 });
             document.getElementById('sticker-modal').style.display = 'flex';
         }
         function closeStickerModal() { document.getElementById('sticker-modal').style.display = 'none'; }
 
-        // ─── СТАТИСТИК ХУУДАС БҮРТГЭЛ ──────────────────────────────────
+        /* ─── ЗӨВХӨН СТИКЕРИЙГ ЦЭВЭРХЭН ХЭВЛЭХ ФУНКЦ ─────────────────────── */
+        function printStickerOnly() {
+            // Body дээр хэвлэх класс нэмнэ
+            document.body.classList.add('printing-sticker');
+
+            // Системийн хэвлэх цонхыг дуудна
+            window.print();
+
+            // Хэвлэж дууссаны дараа (эсвэл цуцалсны дараа) классыг буцааж устгана
+            setTimeout(() => {
+                document.body.classList.remove('printing-sticker');
+            }, 500);
+        }
+
         function renderStats() {
             document.getElementById('s-total-cust').textContent = db.customers.length;
             document.getElementById('s-total-sales').textContent = db.sales.length;
-
             const totalRev = db.sales.reduce((sum, s) => sum + s.amount, 0);
             const totalDisc = db.sales.reduce((sum, s) => sum + s.disc, 0);
-
             document.getElementById('s-total-rev').textContent = fmt(totalRev);
             document.getElementById('s-total-disc').textContent = fmt(totalDisc);
-
-            const el = document.getElementById('all-sales');
-            if (!db.sales.length) {
-                el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>';
-                return;
-            }
-            el.innerHTML = db.sales.map(s => {
+            document.getElementById('all-sales').innerHTML = db.sales.map(s => {
                 const c = db.customers.find(x => x.id === s.card_id);
-                return '<div class="rs-item">'
-                    + '<div><span class="rs-name">' + (c ? c.name : s.card_id) + '</span>'
-                    + '<div class="rs-meta">' + s.date + ' · Сэлбэг: ' + s.note + '</div></div>'
-                    + '<div style="text-align:right"><div class="rs-amt">' + fmt(s.amount) + '₮</div>'
-                    + '<div class="rs-saved">Хөнгөлсөн: -' + fmt(s.disc) + '₮</div></div></div>';
+                return '<div class="rs-item"><div><span class="rs-name">' + (c ? c.name : s.card_id) + '</span><div class="rs-meta">' + s.date + '</div></div><div style="text-align:right"><div>' + fmt(s.amount) + '₮</div></div></div>';
             }).join('');
         }
 
-        // ─── АПП ЭХЛЭХ ХЭСЭГ ──────────────────────────────────────────
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadCustomers();
-            await loadSales();
-            renderRecentHist();
-        });
+        window.addEventListener('DOMContentLoaded', async () => { await loadCustomers(); await loadSales(); renderRecentHist(); });
     </script>
-
 </body>
 
 </html>
