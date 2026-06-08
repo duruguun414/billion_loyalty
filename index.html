@@ -450,6 +450,22 @@
             color: #00aeef
         }
 
+        .edit-btn {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #2d9b4e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit
+        }
+
+        .edit-btn:hover {
+            background: #edf9f1;
+            border-color: #2d9b4e;
+        }
+
         .sticker-btn {
             background: transparent;
             border: 1px solid #b3e0f7;
@@ -571,6 +587,16 @@
 
         .btn-save:hover {
             background: #009ad4
+        }
+
+        .btn-update {
+            background: #2d9b4e;
+            color: #fff;
+            border: none
+        }
+
+        .btn-update:hover {
+            background: #237a3d
         }
 
         .qr-modal-box {
@@ -912,6 +938,7 @@
             .save-sale-btn,
             .add-cust-btn,
             .qr-btn,
+            .edit-btn,
             .sticker-btn,
             .del-btn,
             .print-btn,
@@ -1078,6 +1105,7 @@
 
     </div>
 
+    <!-- Add Customer Modal -->
     <div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeModal()">
         <div class="modal">
             <div class="modal-title">ШИНЭ ҮЙЛЧЛҮҮЛЭГЧ НЭМЭХ</div>
@@ -1092,6 +1120,25 @@
         </div>
     </div>
 
+    <!-- Edit Customer Modal -->
+    <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+        <div class="modal">
+            <div class="modal-title">ҮЙЛЧЛҮҮЛЭГЧИЙН МЭДЭЭЛЭЛ ЗАСАХ</div>
+            <div class="modal-form">
+                <input type="hidden" id="edit-card-id" />
+                <div><label>КАРТ ID</label><input type="text" id="edit-id-display" disabled
+                        style="background:#e0ddd6; color:#666;" /></div>
+                <div><label>НЭР</label><input type="text" id="edit-name" placeholder="Овог нэр" /></div>
+                <div><label>УТАС</label><input type="text" id="edit-phone" placeholder="99xxxxxx" /></div>
+                <div class="modal-btns">
+                    <button class="btn-cancel" onclick="closeEditModal()">БОЛИХ</button>
+                    <button class="btn-update" onclick="updateCustomer()">💾 ХАДГАЛАХ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Modal -->
     <div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
         <div class="qr-modal-box">
             <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:4px">УРАМШУУЛАЛ КАРТ</div>
@@ -1110,6 +1157,7 @@
         </div>
     </div>
 
+    <!-- Sticker Modal -->
     <div class="modal-overlay" id="sticker-modal" onclick="if(event.target===this)closeStickerModal()">
         <div class="sticker-modal-box">
             <div class="sticker-modal-title">&#128424; STICKER ХЭВЛЭХ — 2.32 × 0.83 INCH</div>
@@ -1330,6 +1378,7 @@
                     + '<td style="color:#2d9b4e;font-weight:700">' + tier.pct + '%</td>'
                     + '<td><div class="action-btns">'
                     + '<button class="qr-btn" onclick="event.stopPropagation();showQR(\'' + c.id + '\')">QR карт</button>'
+                    + '<button class="edit-btn" onclick="event.stopPropagation();openEditModal(\'' + c.id + '\')">📝 Засах</button>'
                     + '<button class="sticker-btn" onclick="event.stopPropagation();openStickerModal(\'' + c.id + '\')">&#128424; Sticker</button>'
                     + '<button class="del-btn" onclick="event.stopPropagation();deleteCustomer(\'' + c.id + '\')">✕</button>'
                     + '</div></td></tr>';
@@ -1360,14 +1409,51 @@
             }
         }
 
-        // ─── ҮЙЛЧЛҮҮЛЭГЧ УСТГАХ (ТАНЫ КОДОНД ТАСАРСАН ХЭСЭГ) ───────────────
+        // ─── ҮЙЛЧЛҮҮЛЭГЧИЙН МЭДЭЭЛЭЛ ЗАСАХ ФУНКЦҮҮД ───────────────────────
+        function openEditModal(id) {
+            const c = db.customers.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('edit-card-id').value = c.id;
+            document.getElementById('edit-id-display').value = c.id;
+            document.getElementById('edit-name').value = c.name;
+            document.getElementById('edit-phone').value = c.phone;
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
+
+        async function updateCustomer() {
+            const cardId = document.getElementById('edit-card-id').value;
+            const newName = document.getElementById('edit-name').value.trim();
+            const newPhone = document.getElementById('edit-phone').value.trim();
+
+            if (!newName || !newPhone) { alert("Нэр болон утсаа оруулна уу."); return; }
+
+            const { error } = await supabaseClient
+                .from('customers')
+                .update({ name: newName, phone: newPhone })
+                .eq('card_id', cardId);
+
+            if (error) {
+                alert('Мэдээлэл шинэчлэхэд алдаа гарлаа: ' + error.message);
+            } else {
+                closeEditModal();
+                await loadCustomers(); // Локал өгөгдлийг дахин ачаалах
+                renderCustomers(); // Жагсаалтыг шинэчлэх
+
+                // Хэрэв идэвхтэй QR уншуулах хуудас дээр нээлттэй байсан бол тэнд бас шинэчилнэ
+                if (activeCustomer && activeCustomer.id === cardId) {
+                    scanCard();
+                }
+                alert('Үйлчлүүлэгчийн мэдээлэл амжилттай шинэчлэгдлээ.');
+            }
+        }
+
+        // ─── ҮЙЛЧЛҮҮЛЭГЧ УСТГАХ ──────────────────────────────────────
         async function deleteCustomer(id) {
             if (!confirm('Энэ үйлчлүүлэгчийг устгахдаа итгэлтэй байна уу?')) return;
 
-            // Нэгдүгээрт холбоотой гүйлгээнүүдийг устгах (хэрэв хязгаарлалт байвал)
             await supabaseClient.from('sales').delete().eq('card_id', id);
-
-            // Үйлчлүүлэгчийг устгах
             const { error } = await supabaseClient.from('customers').delete().eq('card_id', id);
             if (error) {
                 alert('Устгаж чадсангүй: ' + error.message);
