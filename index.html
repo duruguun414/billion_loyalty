@@ -7,6 +7,7 @@
     <title>Billion auto parts Mongolia - Loyalty cart</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -450,22 +451,6 @@
             color: #00aeef
         }
 
-        .edit-btn {
-            background: transparent;
-            border: 1px solid #ddd;
-            color: #2d9b4e;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            font-family: inherit
-        }
-
-        .edit-btn:hover {
-            background: #edf9f1;
-            border-color: #2d9b4e;
-        }
-
         .sticker-btn {
             background: transparent;
             border: 1px solid #b3e0f7;
@@ -589,17 +574,6 @@
             background: #009ad4
         }
 
-        .btn-update {
-            background: #2d9b4e;
-            color: #fff;
-            border: none
-        }
-
-        .btn-update:hover {
-            background: #237a3d
-        }
-
-        /* QR Modal */
         .qr-modal-box {
             background: #fff;
             border-radius: 12px;
@@ -663,7 +637,6 @@
             background: #333
         }
 
-        /* Stats page */
         .stats-page {
             display: none
         }
@@ -754,7 +727,6 @@
             letter-spacing: 1px
         }
 
-        /* Sticker Box Styles */
         .sticker-modal-box {
             background: #fff;
             border-radius: 12px;
@@ -778,19 +750,17 @@
             margin-bottom: 16px
         }
 
-        /* Стикэрийн үндсэн хэмжээ - 2.32 x 0.83 inch */
         .sticker-preview {
-            width: 2.32in;
-            height: 0.83in;
+            width: 280px;
+            height: 100px;
             background: #0c1031;
-            border-radius: 4px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            padding: 6px 8px;
-            gap: 8px;
+            padding: 10px 12px;
+            gap: 10px;
             position: relative;
-            overflow: hidden;
-            box-sizing: border-box;
+            overflow: hidden
         }
 
         .sp-accent {
@@ -798,99 +768,86 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 3px;
-            background: #00aeef
+            width: 4px;
+            background: #00aeef;
+            border-radius: 8px 0 0 8px
         }
 
         .sp-dots {
             position: absolute;
-            right: 6px;
-            top: 4px;
+            right: 8px;
+            top: 6px;
             display: flex;
-            gap: 2px
+            gap: 3px
         }
 
         .sp-dots span {
-            width: 3px;
-            height: 3px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
             background: rgba(0, 174, 239, 0.35);
             display: block
         }
 
         .sp-qr {
-            width: 48px;
-            height: 48px;
-            flex-shrink: 0;
-            background: #fff;
-            padding: 2px;
-            border-radius: 2px
+            width: 72px;
+            height: 72px;
+            flex-shrink: 0
         }
 
-        .sp-qr canvas,
         .sp-qr img {
-            width: 44px !important;
-            height: 44px !important;
-            display: block
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .sp-info {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            text-align: left;
-            overflow: hidden
+            gap: 4px;
+            text-align: left
         }
 
         .sp-logo {
-            font-size: 7px;
-            font-weight: 800;
+            font-size: 9px;
+            font-weight: 700;
             color: #00aeef;
-            letter-spacing: 1px;
-            font-family: Arial, sans-serif;
-            line-height: 1
+            letter-spacing: 1.5px;
+            font-family: Arial, sans-serif
         }
 
         .sp-id {
-            font-size: 10px;
+            font-size: 13px;
             font-weight: 700;
             color: #fff;
             font-family: 'Courier New', monospace;
-            white-space: nowrap;
-            margin: 1px 0
+            letter-spacing: 0.5px
         }
 
         .sp-name {
-            font-size: 8px;
-            color: rgba(255, 255, 255, 0.8);
-            font-family: Arial, sans-serif;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100px;
-            line-height: 1
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: Arial, sans-serif
         }
 
         .sp-tier {
             display: inline-block;
-            font-size: 6.5px;
+            font-size: 9px;
             font-weight: 700;
-            padding: 1px 4px;
-            border-radius: 2px;
+            padding: 2px 7px;
+            border-radius: 4px;
             margin-top: 2px;
             font-family: Arial, sans-serif;
-            width: fit-content;
-            line-height: 1
+            width: fit-content
         }
 
         .sp-tier-bronze {
-            background: rgba(205, 127, 50, 0.25);
-            color: #ffb86c;
+            background: rgba(205, 127, 50, 0.2);
+            color: #cd9a50;
             border: 0.5px solid rgba(205, 127, 50, 0.5)
         }
 
         .sp-tier-gold {
-            background: rgba(232, 197, 71, 0.25);
+            background: rgba(232, 197, 71, 0.2);
             color: #e8c547;
             border: 0.5px solid rgba(232, 197, 71, 0.5)
         }
@@ -913,7 +870,8 @@
         .sticker-modal-btns {
             display: flex;
             gap: 8px;
-            justify-content: center
+            justify-content: center;
+            flex-wrap: wrap
         }
 
         .btn-print-sticker {
@@ -954,70 +912,28 @@
             }
         }
 
-        /* ─── ХЭВЛЭХ ҮЕИЙН СТИЛЬ (МАШ ЧУХАЛ) ─────────────────────────── */
         @media print {
 
-            /* Стикэр хэвлэх горим идэвхжсэн үед */
-            body.printing-sticker {
-                background: #fff !important;
-                min-height: auto !important;
+            .topbar,
+            .nav,
+            .save-sale-btn,
+            .add-cust-btn,
+            .qr-btn,
+            .sticker-btn,
+            .del-btn,
+            .print-btn,
+            .btn-cancel {
+                display: none !important
             }
 
-            body.printing-sticker .topbar,
-            body.printing-sticker .content,
-            body.printing-sticker .modal-overlay:not(#sticker-modal),
-            body.printing-sticker .sticker-modal-box>*:not(.sticker-preview-wrap),
-            body.printing-sticker .sticker-modal-title,
-            body.printing-sticker .sticker-info-box,
-            body.printing-sticker .sticker-modal-btns {
-                display: none !important;
+            .modal-overlay {
+                position: static !important;
+                background: none !important
             }
 
-            body.printing-sticker .modal-overlay#sticker-modal {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 2.32in !important;
-                height: 0.83in !important;
-                background: transparent !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            body.printing-sticker .sticker-modal-box {
-                border: none !important;
+            .qr-modal-box {
                 box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: transparent !important;
-                width: 2.32in !important;
-                height: 0.83in !important;
-            }
-
-            body.printing-sticker .sticker-preview-wrap {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 2.32in !important;
-                height: 0.83in !important;
-            }
-
-            body.printing-sticker .sticker-preview {
-                border: none !important;
-                margin: 0 !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            /* Хуудасны ирмэг, хэмжээг хэвлэгчид шууд тушаах */
-            @page {
-                size: 2.32in 0.83in;
-                margin: 0 !important;
+                border: none !important
             }
         }
     </style>
@@ -1035,16 +951,28 @@
     </div>
 
     <div class="content">
+
         <div id="tab-scan">
             <div class="scan-wrap">
                 <div class="scan-box">
                     <div class="scan-title">QR / БАРКОД УНШУУЛАХ</div>
+
+                    <div style="margin-bottom: 16px;">
+                        <button id="cam-toggle-btn" class="scan-btn"
+                            style="width:100%; padding: 12px; background: #2d9b4e; color: white; margin-bottom: 10px;"
+                            onclick="toggleCamera()">
+                            📷 КАМЕР АСААХ (QR УНШУУЛАХ)
+                        </button>
+                        <div id="reader" style="width: 100%; border-radius: 8px; overflow: hidden; background: #000;">
+                        </div>
+                    </div>
+
                     <div class="barcode-input-wrap">
                         <input type="text" id="barcode-in" placeholder="BAPM-000000" maxlength="12"
-                            oninput="this.value=this.value.toUpperCase()"
-                            onkeydown="if(event.key==='Enter')scanCard()" />
-                        <button class="scan-btn" onclick="scanCard()">&#128247; УНШУУЛАХ</button>
+                            oninput="this.value=this.value.toUpperCase()" />
+                        <button class="scan-btn" onclick="scanCard()">🔍 ХАЙХ</button>
                     </div>
+
                     <div id="customer-display" style="display:none">
                         <div class="customer-card">
                             <div class="card-top">
@@ -1063,7 +991,7 @@
                                 </div>
                                 <div class="cstat">
                                     <div class="cstat-val" id="ctotal"></div>
-                                    <div class="cstat-lbl">НИЙТ ₮</div>
+                                    <div class="cstat-lbl">НИЙТ &#8366;</div>
                                 </div>
                                 <div class="cstat">
                                     <div class="cstat-val" id="cdiscount"></div>
@@ -1076,7 +1004,7 @@
                             БҮРТГЭХ</div>
                         <div class="sale-form">
                             <div class="form-row">
-                                <label>ДҮН ₮</label>
+                                <label>ДҮН &#8366;</label>
                                 <input type="number" id="sale-amount" placeholder="Дүн оруул..." min="0" />
                             </div>
                             <div class="form-row">
@@ -1094,6 +1022,7 @@
                             onclick="showTab('customers');openAddModal()">+ Шинэ бүртгэл нэмэх</button>
                     </div>
                 </div>
+
                 <div class="right-panel">
                     <div class="mini-card">
                         <div class="mini-title">СҮҮЛИЙН ГҮЙЛГЭЭНҮҮД</div>
@@ -1110,7 +1039,8 @@
                                     удаа</span><span style="color:#e8c547;font-weight:700">10% хөнгөлт</span></div>
                             <div
                                 style="border-top:1px solid #f0ede6;margin-top:4px;padding-top:6px;font-size:10px;color:#aaa">
-                                Нийт 3сая₮+ → +2% · 5сая₮+ → +5% нэмэлт</div>
+                                Нийт 3сая&#8366;+ → +2% · 5сая&#8366;+ → +5% нэмэлт
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1153,11 +1083,11 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-val" id="s-total-rev">0</div>
-                    <div class="stat-lbl">НИЙТ ОРЛОГО ₮</div>
+                    <div class="stat-lbl">НИЙТ ОРЛОГО &#8366;</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-val" id="s-total-disc">0</div>
-                    <div class="stat-lbl">НИЙТ ХӨНГӨЛТ ₮</div>
+                    <div class="stat-lbl">НИЙТ ХӨНГӨЛТ &#8366;</div>
                 </div>
             </div>
             <div class="recent-sales-box">
@@ -1165,6 +1095,7 @@
                 <div id="all-sales"></div>
             </div>
         </div>
+
     </div>
 
     <div class="modal-overlay" id="add-modal" onclick="if(event.target===this)closeModal()">
@@ -1181,23 +1112,6 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
-        <div class="modal">
-            <div class="modal-title">ҮЙЛЧЛҮҮЛЭГЧИЙН МЭДЭЭЛЭЛ ЗАСАХ</div>
-            <div class="modal-form">
-                <input type="hidden" id="edit-card-id" />
-                <div><label>КАРТ ID</label><input type="text" id="edit-id-display" disabled
-                        style="background:#e0ddd6; color:#666;" /></div>
-                <div><label>НЭР</label><input type="text" id="edit-name" placeholder="Овог нэр" /></div>
-                <div><label>УТАС</label><input type="text" id="edit-phone" placeholder="99xxxxxx" /></div>
-                <div class="modal-btns">
-                    <button class="btn-cancel" onclick="closeEditModal()">БОЛИХ</button>
-                    <button class="btn-update" onclick="updateCustomer()">💾 ХАДГАЛАХ</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
         <div class="qr-modal-box">
             <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:4px">УРАМШУУЛАЛ КАРТ</div>
@@ -1207,8 +1121,15 @@
                 <div id="qr-canvas"></div>
                 <div class="qr-disc-show" id="qr-disc-show"></div>
             </div>
+            <div style="display:flex;gap:6px;justify-content:center;margin:10px 0 4px">
+                <button id="mode-screen" class="print-btn" style="background:#00aeef;color:#1a1a1a"
+                    onclick="setQRMode('screen')">&#128065; ДЭЛГЭЦ</button>
+                <button id="mode-print" class="print-btn"
+                    style="background:transparent;color:#aaa;border:1px solid #555"
+                    onclick="setQRMode('print')">&#128424; ХЭВЛЭХ</button>
+            </div>
             <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
-                <button class="print-btn" onclick="window.print()">&#128424; ХЭВЛЭХ</button>
+                <button class="print-btn" onclick="printQR()">&#128424; ХЭВЛЭХ</button>
                 <button class="btn-cancel"
                     style="background:transparent;border:1px solid #ddd;color:#888;padding:8px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px"
                     onclick="closeQR()">ХААХ</button>
@@ -1218,7 +1139,7 @@
 
     <div class="modal-overlay" id="sticker-modal" onclick="if(event.target===this)closeStickerModal()">
         <div class="sticker-modal-box">
-            <div class="sticker-modal-title">&#128424; STICKER ХЭВЛЭХ — 2.32 × 0.83 INCH</div>
+            <div class="sticker-modal-title">&#128424; STICKER ХЭВЛЭХ — 50 x 30 mm</div>
             <div class="sticker-preview-wrap">
                 <div class="sticker-preview">
                     <div class="sp-accent"></div>
@@ -1233,15 +1154,16 @@
                 </div>
             </div>
             <div class="sticker-info-box">
-                <strong>Хэвлэх заавар:</strong><br>
-                1. "ХЭВЛЭХ" дарахад принтер шууд бэлэн болно.<br>
-                2. Хэрэв буруу харагдвал хэвлэх тохиргооноос:<br>
-                - <strong>Paper size:</strong> Custom (2.32 x 0.83 in)<br>
-                - <strong>Margins:</strong> None эсвэл 0<br>
-                - <strong>Layout:</strong> Landscape (Хэвтээ) эсвэл Автомат болгоно.
+                <strong>Niimbot B1 / B1 Pro заавар:</strong><br>
+                1. <strong>"💾 ЗУРАГ БАЙДЛААР ТАТАХ"</strong> товчийг дарж хадгална.<br>
+                2. Niimbot аппликейшнаа нээгээд <strong>50x30mm</strong> хэмжээ сонгоно.<br>
+                3. Зураг оруулах (Insert Image) цэсээр хадгалсан зургаа сонгож хэвлэнэ.
             </div>
             <div class="sticker-modal-btns">
-                <button class="btn-print-sticker" onclick="printStickerOnly()">&#128424; ХЭВЛЭХ</button>
+                <button class="btn-print-sticker" style="background: #2d9b4e; border-color: #2d9b4e; color: #fff;"
+                    onclick="downloadStickerAsImage()">
+                    💾 ЗУРАГ БАЙДЛААР ТАТАХ
+                </button>
                 <button class="btn-cancel"
                     style="background:transparent;border:1px solid #ddd;color:#888;padding:9px 20px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px"
                     onclick="closeStickerModal()">ХААХ</button>
@@ -1271,45 +1193,79 @@
             return { pct: t.pct + extra, tier: t.tier, tcls: t.tcls, bcls: t.bcls };
         }
 
-        function fmt(n) { return Math.round(n || 0).toLocaleString('mn-MN'); }
+        function fmt(n) { return Math.round(n).toLocaleString('mn-MN'); }
         function genId() { return 'BAPM-' + Date.now().toString().slice(-8); }
 
         let db = { customers: [], sales: [] };
         let activeCustomer = null;
-
-        async function loadCustomers() {
-            const { data, error } = await supabaseClient.from('customers').select('*').order('created_at', { ascending: false });
-            if (!error && data) {
-                db.customers = data.map(c => ({
-                    id: c.card_id, name: c.name, phone: c.phone, visits: c.visits || 0, total: c.total || 0, saved: c.saved || 0
-                }));
-            }
-        }
-
-        async function loadSales() {
-            const { data, error } = await supabaseClient.from('sales').select('*').order('created_at', { ascending: false });
-            if (!error && data) {
-                db.sales = data.map(s => ({
-                    id: s.id, card_id: s.card_id, amount: s.amount, disc: s.disc, note: s.note,
-                    date: new Date(s.created_at).toLocaleDateString('mn-MN')
-                }));
-            }
-        }
+        let activeQRId = null;
+        let activeStickerCustomer = null;
+        let qrMode = 'screen';
 
         function showTab(t) {
-            ['scan', 'customers', 'stats'].forEach(x => { document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none'; });
-            document.querySelectorAll('.nav button').forEach((b, i) => {
-                const tabs = ['scan', 'customers', 'stats'];
-                b.classList.toggle('active', tabs[i] === t);
+            ['scan', 'customers', 'stats'].forEach(x => {
+                document.getElementById('tab-' + x).style.display = x === t ? 'block' : 'none';
             });
-            if (t === 'scan') renderRecentHist();
+            document.querySelectorAll('.nav button').forEach((b, i) => {
+                b.classList.toggle('active', ['scan', 'customers', 'stats'][i] === t);
+            });
             if (t === 'customers') renderCustomers();
             if (t === 'stats') renderStats();
         }
 
+        let html5QrcodeScanner = null;
+
+        function toggleCamera() {
+            const camBtn = document.getElementById('cam-toggle-btn');
+            if (html5QrcodeScanner) {
+                stopCamera();
+                return;
+            }
+            camBtn.textContent = "🛑 КАМЕР УНТРААХ";
+            camBtn.style.background = "#cc4444";
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            const config = {
+                fps: 10,
+                qrbox: function (viewfinderWidth, viewfinderHeight) {
+                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                    const qrboxSize = Math.floor(minEdge * 0.7);
+                    return { width: qrboxSize, height: qrboxSize };
+                }
+            };
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    document.getElementById('barcode-in').value = decodedText.trim().toUpperCase();
+                    scanCard();
+                    stopCamera();
+                },
+                (errorMessage) => { console.log("QR хайж байна..."); }
+            ).catch(err => {
+                console.error(err);
+                alert("Камер нээж чадсангүй. Зөвшөөрлийг шалгана уу!");
+                stopCamera();
+            });
+        }
+
+        function stopCamera() {
+            const camBtn = document.getElementById('cam-toggle-btn');
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner = null;
+                    document.getElementById('reader').innerHTML = "";
+                    camBtn.textContent = "📷 КАМЕР АСААХ (QR УНШУУЛАХ)";
+                    camBtn.style.background = "#2d9b4e";
+                }).catch(err => console.error(err));
+            }
+        }
+
         function scanCard() {
-            const val = document.getElementById('barcode-in').value.trim().toUpperCase();
-            const c = db.customers.find(x => x.id.trim().toUpperCase() === val);
+            const val = document.getElementById('barcode-in').value.trim();
+            const cleanVal = val.trim().toUpperCase();
+            const c = db.customers.find(x => x.id.trim().toUpperCase() === cleanVal);
             document.getElementById('customer-display').style.display = c ? 'block' : 'none';
             document.getElementById('not-found').style.display = c ? 'none' : 'block';
             document.getElementById('toast').style.display = 'none';
@@ -1327,12 +1283,6 @@
             }
         }
 
-        function quickScan(id) {
-            document.getElementById('barcode-in').value = id;
-            showTab('scan');
-            scanCard();
-        }
-
         async function saveSale() {
             if (!activeCustomer) return;
             const amt = parseInt(document.getElementById('sale-amount').value) || 0;
@@ -1346,15 +1296,28 @@
             const newTotal = activeCustomer.total + amt;
             const newSaved = (activeCustomer.saved || 0) + disc;
 
-            const { error: saleError } = await supabaseClient.from('sales').insert([{ card_id: activeCustomer.id, amount: amt, disc: disc, note: note }]);
-            if (saleError) { alert('Алдаа гарлаа'); return; }
+            const { data: saleData, error: saleError } = await supabaseClient
+                .from('sales')
+                .insert([{ card_id: activeCustomer.id, amount: amt, disc: disc, note: note }])
+                .select();
+            if (saleError) { alert('Гүйлгээ хадгалж чадсангүй:\n' + saleError.message); return; }
 
-            await supabaseClient.from('customers').update({ visits: newVisits, total: newTotal, saved: newSaved }).eq('card_id', activeCustomer.id);
+            await supabaseClient
+                .from('customers')
+                .update({ visits: newVisits, total: newTotal, saved: newSaved })
+                .eq('card_id', activeCustomer.id);
+
+            const toast = document.getElementById('toast');
+            toast.textContent = '✓ Амжилттай бүртгэгдлээ — хөнгөлөлт: ' + fmt(disc) + '₮';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
 
             document.getElementById('sale-amount').value = '';
             document.getElementById('sale-note').value = '';
-            await loadCustomers(); await loadSales();
-            scanCard(); renderRecentHist();
+
+            await loadCustomers();
+            await loadSales();
+            scanCard();
         }
 
         function renderRecentHist() {
@@ -1362,8 +1325,12 @@
             const el = document.getElementById('recent-hist');
             if (!sales.length) { el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>'; return; }
             el.innerHTML = sales.map(s => {
-                const c = db.customers.find(x => x.id === s.card_id);
-                return '<div class="hist-item"><div><div style="font-weight:600">' + (c ? c.name : s.card_id) + '</div><div class="hist-date">' + s.date + '</div></div><div style="text-align:right"><div class="hist-amt">' + fmt(s.amount) + '₮</div></div></div>';
+                const c = db.customers.find(x => x.id === s.custId);
+                return '<div class="hist-item">'
+                    + '<div><div style="font-weight:600;color:#1a1a1a;font-size:12px">' + (c ? c.name : s.custId) + '</div>'
+                    + '<div class="hist-date">' + s.date + ' · ' + s.note + '</div></div>'
+                    + '<div style="text-align:right"><div class="hist-amt">' + fmt(s.amount) + '₮</div>'
+                    + '<div class="hist-disc">-' + fmt(s.disc) + '₮</div></div></div>';
             }).join('');
         }
 
@@ -1371,117 +1338,195 @@
             const q = (document.getElementById('cust-search')?.value || '').toLowerCase();
             const list = db.customers.filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.id.toLowerCase().includes(q));
             const tb = document.getElementById('cust-tbody');
-            if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Олдсонгүй</td></tr>'; return; }
+            if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Үйлчлүүлэгч олдсонгүй</td></tr>'; return; }
             tb.innerHTML = list.map(c => {
                 const tier = getTier(c.visits, c.total);
                 return '<tr onclick="quickScan(\'' + c.id + '\')">'
                     + '<td><div style="font-weight:600">' + c.name + '</div><div style="font-size:11px;color:#aaa">' + c.phone + '</div></td>'
-                    + '<td>' + c.id + '</td>'
+                    + '<td style="font-family:\'Courier New\',monospace;font-size:12px;color:#888">' + c.id + '</td>'
                     + '<td><span class="badge ' + tier.bcls + '">' + tier.tier + '</span></td>'
-                    + '<td style="text-align:center">' + c.visits + '</td>'
-                    + '<td>' + fmt(c.total) + '₮</td>'
-                    + '<td>' + tier.pct + '%</td>'
+                    + '<td style="font-weight:700;text-align:center">' + c.visits + '</td>'
+                    + '<td style="font-family:\'Courier New\',monospace">' + fmt(c.total) + '₮</td>'
+                    + '<td style="color:#2d9b4e;font-weight:700">' + tier.pct + '%</td>'
                     + '<td><div class="action-btns">'
                     + '<button class="qr-btn" onclick="event.stopPropagation();showQR(\'' + c.id + '\')">QR карт</button>'
-                    + '<button class="edit-btn" onclick="event.stopPropagation();openEditModal(\'' + c.id + '\')">📝 Засах</button>'
                     + '<button class="sticker-btn" onclick="event.stopPropagation();openStickerModal(\'' + c.id + '\')">&#128424; Sticker</button>'
                     + '<button class="del-btn" onclick="event.stopPropagation();deleteCustomer(\'' + c.id + '\')">✕</button>'
                     + '</div></td></tr>';
             }).join('');
         }
 
+        async function deleteCustomer(id) {
+            const c = db.customers.find(x => x.id === id);
+            if (!c || !confirm(c.name + ' устгах уу?')) return;
+            const { error } = await supabaseClient.from('customers').delete().eq('card_id', id);
+            if (error) { alert('Устгаж чадсангүй'); return; }
+            db.customers = db.customers.filter(x => x.id !== id);
+            renderCustomers();
+        }
+
+        function renderStats() {
+            const totalRev = db.sales.reduce((a, s) => a + s.amount, 0);
+            const totalDisc = db.sales.reduce((a, s) => a + s.disc, 0);
+            document.getElementById('s-total-cust').textContent = db.customers.length;
+            document.getElementById('s-total-sales').textContent = db.sales.length;
+            document.getElementById('s-total-rev').textContent = fmt(totalRev / 1000) + 'K';
+            document.getElementById('s-total-disc').textContent = fmt(totalDisc / 1000) + 'K';
+            const el = document.getElementById('all-sales');
+            if (!db.sales.length) { el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>'; return; }
+            el.innerHTML = db.sales.map(s => {
+                const c = db.customers.find(x => x.id === s.custId);
+                return '<div class="rs-item">'
+                    + '<div><div class="rs-name">' + (c ? c.name : s.custId) + '</div>'
+                    + '<div class="rs-meta">' + s.date + ' · ' + s.note + '</div></div>'
+                    + '<div style="text-align:right"><div class="rs-amt">' + fmt(s.amount) + '₮</div>'
+                    + '<div class="rs-saved">-' + fmt(s.disc) + '₮ хөнгөлөлт</div></div></div>';
+            }).join('');
+        }
+
         function openAddModal() { document.getElementById('add-modal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('add-modal').style.display = 'none'; }
+        function closeModal() {
+            document.getElementById('add-modal').style.display = 'none';
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-phone').value = '';
+        }
 
         async function addCustomer() {
             const name = document.getElementById('new-name').value.trim();
             const phone = document.getElementById('new-phone').value.trim();
-            if (!name || !phone) return;
+            if (!name || !phone) { alert('Мэдээлэл дутуу байна'); return; }
             const cardId = genId();
-            await supabaseClient.from('customers').insert([{ card_id: cardId, name: name, phone: phone }]);
+            const { error } = await supabaseClient.from('customers').insert([{ card_id: cardId, name, phone, visits: 0, total: 0, saved: 0 }]);
+            if (error) { alert('Хадгалж чадсангүй'); return; }
             closeModal();
-            await loadCustomers(); renderCustomers();
+            await loadCustomers();
             openStickerModal(cardId);
         }
 
-        function openEditModal(id) {
-            const c = db.customers.find(x => x.id === id); if (!c) return;
-            document.getElementById('edit-card-id').value = c.id;
-            document.getElementById('edit-id-display').value = c.id;
-            document.getElementById('edit-name').value = c.name;
-            document.getElementById('edit-phone').value = c.phone;
-            document.getElementById('edit-modal').style.display = 'flex';
-        }
-        function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
-
-        async function updateCustomer() {
-            const cardId = document.getElementById('edit-card-id').value;
-            const newName = document.getElementById('edit-name').value.trim();
-            const newPhone = document.getElementById('edit-phone').value.trim();
-            await supabaseClient.from('customers').update({ name: newName, phone: newPhone }).eq('card_id', cardId);
-            closeEditModal(); await loadCustomers(); renderCustomers();
-        }
-
-        async function deleteCustomer(id) {
-            if (!confirm('Устгах уу?')) return;
-            await supabaseClient.from('sales').delete().eq('card_id', id);
-            await supabaseClient.from('customers').delete().eq('card_id', id);
-            await loadCustomers(); await loadSales(); renderCustomers();
-        }
-
-        function showQR(id) {
-            const c = db.customers.find(x => x.id === id); if (!c) return;
-            const tier = getTier(c.visits, c.total);
-            document.getElementById('qr-name').textContent = c.name;
-            document.getElementById('qr-id-show').textContent = c.id;
-            document.getElementById('qr-disc-show').textContent = "ХӨНГӨЛӨЛТ: " + tier.pct + "%";
-            document.getElementById('qr-canvas').innerHTML = '';
-            new QRCode(document.getElementById('qr-canvas'), { text: c.id, width: 140, height: 140 });
-            document.getElementById('qr-modal').style.display = 'flex';
-        }
-        function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
-
         function openStickerModal(id) {
-            const c = db.customers.find(x => x.id === id); if (!c) return;
+            const c = db.customers.find(x => x.id === id);
+            if (!c) return;
+            activeStickerCustomer = c;
             const tier = getTier(c.visits, c.total);
             document.getElementById('sp-id').textContent = c.id;
             document.getElementById('sp-name').textContent = c.name;
-            document.getElementById('sp-tier').textContent = tier.tier;
-            document.getElementById('sp-tier').className = 'sp-tier sp-tier-' + tier.tier.toLowerCase();
-            document.getElementById('sp-qr-wrap').innerHTML = '';
-            new QRCode(document.getElementById('sp-qr-wrap'), { text: c.id, width: 44, height: 44 });
+            const tierEl = document.getElementById('sp-tier');
+            tierEl.textContent = tier.tier;
+            tierEl.className = 'sp-tier ' + (tier.tier === 'GOLD' ? 'sp-tier-gold' : 'sp-tier-bronze');
+
+            const qrWrap = document.getElementById('sp-qr-wrap');
+            qrWrap.innerHTML = '';
+            // QR кодыг үүсгэх
+            new QRCode(qrWrap, { text: c.id, width: 140, height: 140, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
             document.getElementById('sticker-modal').style.display = 'flex';
         }
-        function closeStickerModal() { document.getElementById('sticker-modal').style.display = 'none'; }
 
-        /* ─── ЗӨВХӨН СТИКЕРИЙГ ЦЭВЭРХЭН ХЭВЛЭХ ФУНКЦ ─────────────────────── */
-        function printStickerOnly() {
-            // Body дээр хэвлэх класс нэмнэ
-            document.body.classList.add('printing-sticker');
+        function closeStickerModal() { document.getElementById('sticker-modal').style.display = 'none'; activeStickerCustomer = null; }
 
-            // Системийн хэвлэх цонхыг дуудна
-            window.print();
+        // ─── 🌟 СТИКЕРИЙГ ЦЭВЭР ХАР ЦАГААН ӨНДӨР ЧАНАРТАЙ ЗУРАГ БОЛГОЖ ТАТАХ ФУНКЦ ───
+        function downloadStickerAsImage() {
+            const c = activeStickerCustomer;
+            if (!c) return;
 
-            // Хэвлэж дууссаны дараа (эсвэл цуцалсны дараа) классыг буцааж устгана
-            setTimeout(() => {
-                document.body.classList.remove('printing-sticker');
-            }, 500);
+            // QR кодны img эсвэл canvas элементийг олох
+            const qrImg = document.getElementById('sp-qr-wrap').querySelector('img') || document.getElementById('sp-qr-wrap').querySelector('canvas');
+            if (!qrImg) {
+                alert("QR код бэлэн болоогүй байна, түр хүлээнэ үү.");
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            // Niimbot 50x30 цаасанд зориулсан микроскоп нягтралтай харьцаа (500x300px)
+            canvas.width = 500;
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Дэвсгэрийг цэвэр цагаан болгох
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Хүрээ шугам зурах
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
+            ctx.strokeRect(18, 18, canvas.width - 36, canvas.height - 36);
+
+            // 3. QR кодыг зураг дээр хуулах (Чанар алдуулахгүйн тулд том хэмжээгээр)
+            ctx.drawImage(qrImg, 35, 45, 195, 195);
+
+            // 4. Текстүүдийг цэвэр хар өнгөөр маш тод хэвлэхээр зурах
+            ctx.fillStyle = '#000000';
+
+            // Лого / Гарчиг
+            ctx.font = 'bold 22px Arial, Helvetica, sans-serif';
+            ctx.fillText('BILLION AUTO PARTS', 245, 80);
+
+            // Хэрэглэгчийн ID (Шүүж харахад хялбар Courier фонтоор)
+            ctx.font = 'bold 28px "Courier New", monospace';
+            ctx.fillText(c.id, 245, 135);
+
+            // Хэрэглэгчийн нэр
+            ctx.font = 'bold 24px Arial, Helvetica, sans-serif';
+            ctx.fillText(c.name, 245, 190);
+
+            // Шатлалын ангилал
+            const tier = getTier(c.visits, c.total);
+            ctx.font = '18px Arial, Helvetica, sans-serif';
+            ctx.fillText(`АНГИЛАЛ: ${tier.tier}`, 245, 235);
+
+            // 5. Зургийг файл болгон татаж авах үйлдэл
+            const link = document.createElement('a');
+            link.download = `Billion_${c.name}_${c.id}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
         }
 
-        function renderStats() {
-            document.getElementById('s-total-cust').textContent = db.customers.length;
-            document.getElementById('s-total-sales').textContent = db.sales.length;
-            const totalRev = db.sales.reduce((sum, s) => sum + s.amount, 0);
-            const totalDisc = db.sales.reduce((sum, s) => sum + s.disc, 0);
-            document.getElementById('s-total-rev').textContent = fmt(totalRev);
-            document.getElementById('s-total-disc').textContent = fmt(totalDisc);
-            document.getElementById('all-sales').innerHTML = db.sales.map(s => {
-                const c = db.customers.find(x => x.id === s.card_id);
-                return '<div class="rs-item"><div><span class="rs-name">' + (c ? c.name : s.card_id) + '</span><div class="rs-meta">' + s.date + '</div></div><div style="text-align:right"><div>' + fmt(s.amount) + '₮</div></div></div>';
-            }).join('');
+        function quickScan(id) { document.getElementById('barcode-in').value = id; scanCard(); showTab('scan'); }
+
+        function showQR(id) {
+            const c = db.customers.find(x => x.id === id); if (!c) return;
+            activeQRId = id; qrMode = 'screen'; const tier = getTier(c.visits, c.total);
+            document.getElementById('qr-name').textContent = c.name;
+            document.getElementById('qr-id-show').textContent = c.id;
+            document.getElementById('qr-disc-show').textContent = tier.pct + '% хөнгөлөлт';
+            renderQRCanvas(id, 'screen');
+            document.getElementById('qr-modal').style.display = 'flex';
         }
 
-        window.addEventListener('DOMContentLoaded', async () => { await loadCustomers(); await loadSales(); renderRecentHist(); });
+        function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
+        function printQR() { window.print(); }
+
+        function setQRMode(mode) {
+            qrMode = mode;
+            document.getElementById('mode-screen').style.background = mode === 'screen' ? '#00aeef' : 'transparent';
+            document.getElementById('mode-screen').style.color = mode === 'screen' ? '#1a1a1a' : '#aaa';
+            document.getElementById('mode-print').style.background = mode === 'print' ? '#00aeef' : 'transparent';
+            document.getElementById('mode-print').style.color = mode === 'print' ? '#1a1a1a' : '#aaa';
+            if (activeQRId) renderQRCanvas(activeQRId, mode);
+        }
+
+        function renderQRCanvas(id, mode) {
+            const size = mode === 'print' ? 437 : 180;
+            const el = document.getElementById('qr-canvas'); el.innerHTML = '';
+            const c = db.customers.find(x => x.id === id); if (!c) return;
+            new QRCode(el, { text: c.id, width: size, height: size, colorDark: '#00aeef', colorLight: '#1a1a1a', correctLevel: QRCode.CorrectLevel.M });
+        }
+
+        async function loadCustomers() {
+            const { data, error } = await supabaseClient.from('customers').select('*');
+            if (error) return;
+            db.customers = data.map(r => ({ id: r.card_id, name: r.name, phone: r.phone, visits: r.visits || 0, total: r.total || 0, saved: r.saved || 0 }));
+        }
+
+        async function loadSales() {
+            const { data, error } = await supabaseClient.from('sales').select('*').order('created_at', { ascending: false });
+            if (error) return;
+            db.sales = data.map(r => ({ custId: r.card_id, amount: r.amount, disc: r.disc || 0, note: r.note || '—', date: new Date(r.created_at).toLocaleDateString('mn-MN') }));
+            renderRecentHist();
+        }
+
+        (async () => { await loadCustomers(); await loadSales(); showTab('scan'); })();
+        document.getElementById('barcode-in').addEventListener('keydown', e => { if (e.key === 'Enter') scanCard(); });
     </script>
 </body>
 
