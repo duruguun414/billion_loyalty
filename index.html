@@ -482,6 +482,22 @@
             background: #ffeeee
         }
 
+        .edit-btn {
+            background: transparent;
+            border: 1px solid #c8e6c9;
+            color: #2d9b4e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit
+        }
+
+        .edit-btn:hover {
+            background: #e8f5e9;
+            border-color: #2d9b4e
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -959,7 +975,7 @@
 
                     <div style="margin-bottom: 16px;">
                         <button id="cam-toggle-btn" class="scan-btn"
-                            style="width:100%; padding: 12px; background: #2d9b4e; color: white; margin-bottom: 10px;"
+                            style="width:100%; padding: 12px; background: #00aeef; color: white; margin-bottom: 10px;"
                             onclick="toggleCamera()">
                             📷 КАМЕР АСААХ (QR УНШУУЛАХ)
                         </button>
@@ -1112,6 +1128,22 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
+        <div class="modal">
+            <div class="modal-title">&#9998; МЭДЭЭЛЭЛ ЗАСАХ</div>
+            <div class="modal-form">
+                <div style="font-size:11px;color:#aaa;letter-spacing:1px;margin-bottom:4px">КАРТ ID: <span
+                        id="edit-card-id" style="color:#00aeef;font-family:'Courier New',monospace"></span></div>
+                <div><label>НЭР</label><input type="text" id="edit-name" placeholder="Овог нэр" /></div>
+                <div><label>УТАС</label><input type="text" id="edit-phone" placeholder="99xxxxxx" /></div>
+                <div class="modal-btns">
+                    <button class="btn-cancel" onclick="closeEditModal()">БОЛИХ</button>
+                    <button class="btn-save" onclick="saveEditCustomer()">&#10003; ХАДГАЛАХ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="qr-modal" onclick="if(event.target===this)closeQR()">
         <div class="qr-modal-box">
             <div style="font-size:10px;letter-spacing:2px;color:#888;margin-bottom:4px">УРАМШУУЛАЛ КАРТ</div>
@@ -1257,7 +1289,7 @@
                     html5QrcodeScanner = null;
                     document.getElementById('reader').innerHTML = "";
                     camBtn.textContent = "📷 КАМЕР АСААХ (QR УНШУУЛАХ)";
-                    camBtn.style.background = "#2d9b4e";
+                    camBtn.style.background = "#00aeef";
                 }).catch(err => console.error(err));
             }
         }
@@ -1351,6 +1383,7 @@
                     + '<td><div class="action-btns">'
                     + '<button class="qr-btn" onclick="event.stopPropagation();showQR(\'' + c.id + '\')">QR карт</button>'
                     + '<button class="sticker-btn" onclick="event.stopPropagation();openStickerModal(\'' + c.id + '\')">&#128424; Sticker</button>'
+                    + '<button class="edit-btn" onclick="event.stopPropagation();openEditModal(\'' + c.id + '\')">&#9998; Засах</button>'
                     + '<button class="del-btn" onclick="event.stopPropagation();deleteCustomer(\'' + c.id + '\')">✕</button>'
                     + '</div></td></tr>';
             }).join('');
@@ -1479,6 +1512,36 @@
             link.download = `Billion_${c.name}_${c.id}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
+        }
+
+        function openEditModal(id) {
+            const c = db.customers.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('edit-card-id').textContent = c.id;
+            document.getElementById('edit-name').value = c.name;
+            document.getElementById('edit-phone').value = c.phone;
+            document.getElementById('edit-modal').dataset.editId = id;
+            document.getElementById('edit-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('edit-name').focus(), 100);
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            document.getElementById('edit-name').value = '';
+            document.getElementById('edit-phone').value = '';
+        }
+
+        async function saveEditCustomer() {
+            const id = document.getElementById('edit-modal').dataset.editId;
+            const name = document.getElementById('edit-name').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            if (!name || !phone) { alert('Нэр болон утасны дугаар оруулна уу'); return; }
+            const { error } = await supabaseClient.from('customers').update({ name, phone }).eq('card_id', id);
+            if (error) { alert('Хадгалж чадсангүй: ' + error.message); return; }
+            const c = db.customers.find(x => x.id === id);
+            if (c) { c.name = name; c.phone = phone; }
+            closeEditModal();
+            renderCustomers();
         }
 
         function quickScan(id) { document.getElementById('barcode-in').value = id; scanCard(); showTab('scan'); }
