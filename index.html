@@ -1073,6 +1073,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th style="width:40;text-align:center">№</th>
                             <th>ҮЙЛЧЛҮҮЛЭГЧ</th>
                             <th>КАРТ ID</th>
                             <th>ШАТЛАЛ</th>
@@ -1370,10 +1371,11 @@
             const q = (document.getElementById('cust-search')?.value || '').toLowerCase();
             const list = db.customers.filter(c => !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.id.toLowerCase().includes(q));
             const tb = document.getElementById('cust-tbody');
-            if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Үйлчлүүлэгч олдсонгүй</td></tr>'; return; }
-            tb.innerHTML = list.map(c => {
+            if (!list.length) { tb.innerHTML = '<tr><td colspan="8" class="empty">Үйлчлүүлэгч олдсонгүй</td></tr>'; return; }
+            tb.innerHTML = list.map((c, i) => {
                 const tier = getTier(c.visits, c.total);
                 return '<tr onclick="quickScan(\'' + c.id + '\')">'
+                    + '<td style="text-align:center;font-size:12px;color:#aaa;font-weight:600;width:40px">' + (i + 1) + '</td>'
                     + '<td><div style="font-weight:600">' + c.name + '</div><div style="font-size:11px;color:#aaa">' + c.phone + '</div></td>'
                     + '<td style="font-family:\'Courier New\',monospace;font-size:12px;color:#888">' + c.id + '</td>'
                     + '<td><span class="badge ' + tier.bcls + '">' + tier.tier + '</span></td>'
