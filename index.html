@@ -1405,8 +1405,8 @@
             const totalDisc = db.sales.reduce((a, s) => a + s.disc, 0);
             document.getElementById('s-total-cust').textContent = db.customers.length;
             document.getElementById('s-total-sales').textContent = db.sales.length;
-            document.getElementById('s-total-rev').textContent = fmt(totalRev / 1000) + 'K';
-            document.getElementById('s-total-disc').textContent = fmt(totalDisc / 1000) + 'K';
+            document.getElementById('s-total-rev').textContent = fmt(totalRev) + '₮';
+            document.getElementById('s-total-disc').textContent = fmt(totalDisc) + '₮';
             const el = document.getElementById('all-sales');
             if (!db.sales.length) { el.innerHTML = '<div class="empty">Гүйлгээ байхгүй</div>'; return; }
             el.innerHTML = db.sales.map(s => {
