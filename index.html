@@ -1310,7 +1310,7 @@
                 document.getElementById('ctier').textContent = tier.tier;
                 document.getElementById('ctier').className = 'card-tier ' + tier.tcls;
                 document.getElementById('cvisits').textContent = c.visits;
-                document.getElementById('ctotal').textContent = fmt(c.total / 1000) + 'K';
+                document.getElementById('ctotal').textContent = fmt(c.total) + '₮';
                 document.getElementById('cdiscount').textContent = tier.pct + '%';
                 document.getElementById('disc-badge').textContent = '✓ ЭНЭ УДААГИЙН ХӨНГӨЛӨЛТ: ' + tier.pct + '%  —  ' + c.name;
             }
